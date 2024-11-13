@@ -1,13 +1,20 @@
 import pygame
 import math 
 import random
+from character import Character
+from items import Item
 import constants
 
 class World():
     def __init__(self):
         self.map_tiles = []
+        self.obstacle_tiles = []
+        self.exit_tile = None
+        self.item_list = []
+        self.player = None
+        self.character_list = []
 
-    def process_data(self, data, tile_list):
+    def process_data(self, data, tile_list, item_images, mob_animation_list):
         self.level_length = len(data)
         # iterate through each value in the data file
         for y, row in enumerate(data):
@@ -19,6 +26,31 @@ class World():
                 image_rect.center = (image_x, image_y)
                 tile_data = [image, image_rect, image_x, image_y]
 
+                if tile == 7:
+                    self.obstacle_tiles.append(tile_data)
+                elif tile == 8:
+                    self.exit_tile = tile_data
+                elif tile == 9:
+                    coin = Item(image_x, image_y, 0, item_images[0])
+                    self.item_list.append(coin)
+                    tile_data[0] = tile_list[0]
+                elif tile == 10:
+                    potion = Item(image_x, image_y, 1, [item_images[1]])
+                    self.item_list.append(potion)
+                    tile_data[0] = tile_list[0]
+                elif tile == 11:
+                    # create a character object
+                    player = Character(image_x, image_y, 100, mob_animation_list, 0, False, 1)
+                    self.player = player
+                    tile_data[0] = tile_list[0]
+                elif tile >= 12 and tile <= 16:
+                    enemy = Character(image_x, image_y, 100, mob_animation_list, tile - 11, False, 1)
+                    self.character_list.append(enemy)
+                    tile_data[0] = tile_list[0]
+                elif tile == 17:
+                    enemy = Character(image_x, image_y, 100, mob_animation_list, 6, True, 2)
+                    self.character_list.append(enemy)
+                    tile_data[0] = tile_list[0]
                 #add to map tiles
                 if tile >= 0:
                     self.map_tiles.append(tile_data)
