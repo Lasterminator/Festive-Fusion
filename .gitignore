@@ -1,3 +1,4 @@
 # Ignore levels and assets folders
 levels/
 assets/
+__pycache__/
