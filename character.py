@@ -16,12 +16,13 @@ class Character:
         self.alive = True
 
         self.image = self.animation_list[self.action][self.frame_index]
-        self.rect = pygame.Rect(0, 0, 40, 40)
+        self.rect = pygame.Rect(0, 0, constants.TILE_SIZE, constants.TILE_SIZE)
         self.rect.center = (x, y)
         
     
     # move the character
     def move(self, dx, dy):
+        screen_scroll = [0, 0]
         self.running = False
         # check if the character is running
         if dx != 0 or dy != 0:
@@ -38,6 +39,31 @@ class Character:
 
         self.rect.x += dx
         self.rect.y += dy
+
+        # logic only for the player
+        if self.character_type == 0:
+            # check if the player is out of bounds
+            # camera left right
+            if self.rect.right > (constants.SCREEN_WIDTH - constants.SCROLL_THRESH):
+                screen_scroll[0] = (constants.SCREEN_WIDTH - constants.SCROLL_THRESH) - self.rect.right
+                self.rect.right = (constants.SCREEN_WIDTH - constants.SCROLL_THRESH)
+            if self.rect.left < constants.SCROLL_THRESH:
+                screen_scroll[0] = constants.SCROLL_THRESH - self.rect.left
+                self.rect.left = constants.SCROLL_THRESH
+
+            # camera up down
+            if self.rect.top < constants.SCROLL_THRESH:
+                screen_scroll[1] = constants.SCROLL_THRESH - self.rect.top
+                self.rect.top = constants.SCROLL_THRESH
+            if self.rect.bottom > (constants.SCREEN_HEIGHT - constants.SCROLL_THRESH):
+                screen_scroll[1] = (constants.SCREEN_HEIGHT - constants.SCROLL_THRESH) - self.rect.bottom
+                self.rect.bottom = (constants.SCREEN_HEIGHT - constants.SCROLL_THRESH)
+        return screen_scroll
+
+    def ai(self, screen_scroll):
+        #reposition mobs based on screen scroll
+        self.rect.x += screen_scroll[0]
+        self.rect.y += screen_scroll[1]
 
     # update the character's animation
     def update(self):
