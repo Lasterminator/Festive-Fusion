@@ -1,12 +1,29 @@
+# game resolution
 SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 720
-RED = (255, 0, 0)
-BGCOLOR = (0, 0, 0)
+
+# game fps
 FPS = 60
+
+# speed
 CHARACTER_SPEED = 5
 ARROW_SPEED = 10
+
+# Scale
 SCALE = 3
 CHARACTER_SCALE = 3
 BOW_SCALE = 1.5
-CHARACTER_OFFSET = 12
+ITEM_SCALE = 3
+POTION_SCALE = 2
+
+# cooldowns
 SHOT_COOLDOWN = 300
+
+# colors
+RED = (255, 0, 0)
+BGCOLOR = (0, 0, 0)
+PANEL = (50, 50, 50)
+WHITE = (255, 255, 255)
+
+# sprite offset
+CHARACTER_OFFSET = 12
