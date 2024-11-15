@@ -1,11 +1,14 @@
 import pygame
+from pygame import mixer
 import csv
 import constants
 from character import Character
 from weapon import Weapon
 from items import Item
 from world import World
+from button import Button
 
+mixer.init()
 # initialize pygame
 pygame.init() 
 
@@ -18,7 +21,9 @@ clock = pygame.time.Clock()
 
 # define game variables
 level = 1
-start_intro = True
+start_game = False
+pause_game = False
+start_intro = False
 screen_scroll = [0, 0]
 
 # define character movement variables
@@ -33,6 +38,26 @@ font = pygame.font.Font("assets/fonts/AtariClassic.ttf", 20)
 # helper function to scale the character image
 def scale_image(image, scale):
     return pygame.transform.scale(image, (image.get_width() * scale, image.get_height() * scale))
+
+# load music and sounds
+pygame.mixer.music.load('assets/audio/music.wav')
+pygame.mixer.music.set_volume(0.3)
+# pygame.mixer.music.play(-1, 0.0, 5000)
+shot_fx = pygame.mixer.Sound('assets/audio/arrow_shot.mp3')
+shot_fx.set_volume(0.5)
+hit_fx = pygame.mixer.Sound('assets/audio/arrow_hit.wav')
+hit_fx.set_volume(0.5)
+coin_fx = pygame.mixer.Sound('assets/audio/coin.wav')
+coin_fx.set_volume(0.5)
+heal_fx = pygame.mixer.Sound('assets/audio/heal.wav')
+heal_fx.set_volume(0.5)
+
+# load button images
+start_img = scale_image(pygame.image.load('assets/images/buttons/button_start.png').convert_alpha(), constants.BUTTON_SCALE)
+restart_img = scale_image(pygame.image.load('assets/images/buttons/button_restart.png').convert_alpha(), constants.BUTTON_SCALE)
+exit_img = scale_image(pygame.image.load('assets/images/buttons/button_exit.png').convert_alpha(), constants.BUTTON_SCALE)
+resume_img = scale_image(pygame.image.load('assets/images/buttons/button_resume.png').convert_alpha(), constants.BUTTON_SCALE)
+
 
 # load heart image
 heart_empty = scale_image(pygame.image.load('assets/images/items/heart_empty.png').convert_alpha(), constants.ITEM_SCALE)
@@ -155,12 +180,13 @@ class ScreenFade():
     def fade(self):
         fade_complete = False
         self.fade_counter += self.speed
-        if self.direction == 1:
+        if self.direction == 1: # whole screen fade
             pygame.draw.rect(screen, self.colour, (0 - self.fade_counter, 0, constants.SCREEN_WIDTH // 2, constants.SCREEN_HEIGHT))
             pygame.draw.rect(screen, self.colour, (constants.SCREEN_WIDTH // 2 + self.fade_counter, 0, constants.SCREEN_WIDTH, constants.SCREEN_HEIGHT))
             pygame.draw.rect(screen, self.colour, (0, 0 - self.fade_counter, constants.SCREEN_WIDTH, constants.SCREEN_HEIGHT // 2))
             pygame.draw.rect(screen, self.colour, (0, constants.SCREEN_HEIGHT // 2 + self.fade_counter, constants.SCREEN_WIDTH, constants.SCREEN_HEIGHT))
-        
+        elif self.direction == 2: #vertical screen fade down 
+            pygame.draw.rect(screen, self.colour, (0, 0 , constants.SCREEN_WIDTH, 0 + self.fade_counter))
         
         if self.fade_counter >= constants.SCREEN_WIDTH:
             fade_complete = True
@@ -208,104 +234,159 @@ for item in world.item_list:
 
 # create screen fades 
 intro_fade = ScreenFade(1, constants.BLACK, 4)
+death_fade = ScreenFade(2, constants.PINK, 4)
+
+# create button
+start_button = Button(constants.SCREEN_WIDTH // 2 - 145, constants.SCREEN_HEIGHT // 2 - 150, start_img)
+restart_button = Button(constants.SCREEN_WIDTH // 2 - 175, constants.SCREEN_HEIGHT // 2 - 50, restart_img)
+exit_button = Button(constants.SCREEN_WIDTH // 2 - 110, constants.SCREEN_HEIGHT // 2 + 50, exit_img)
+resume_button = Button(constants.SCREEN_WIDTH // 2 - 175, constants.SCREEN_HEIGHT // 2 - 150, resume_img)
 
 # main game loop
 run = True
 while run:
     # set the frame rate
     clock.tick(constants.FPS)
-    # fill the screen with a color
-    screen.fill(constants.BGCOLOR)
 
-    draw_grid()
+    if start_game == False:
+        screen.fill(constants.MENU_BGCOLOR)
+        if start_button.draw(screen):
+            start_game = True
+            start_intro = True
+        if exit_button.draw(screen):
+            run = False
 
-    # Calculate the character's movement
-    dx = 0
-    dy = 0
-    if moving_left == True:
-        dx = -constants.CHARACTER_SPEED
-    if moving_right == True:
-        dx = constants.CHARACTER_SPEED
-    if moving_up == True:
-        dy = -constants.CHARACTER_SPEED
-    if moving_down == True:
-        dy = constants.CHARACTER_SPEED
+    else:
+        if pause_game == True:
+            screen.fill(constants.MENU_BGCOLOR)
+            if resume_button.draw(screen):
+                pause_game = False
+            if exit_button.draw(screen):
+                run = False
+        else:
+            # fill the screen with a color
+            screen.fill(constants.BGCOLOR)
 
-    # print(dx, dy)
+            # draw_grid()
 
-    # move 
-    screen_scroll, level_complete = player.move(dx, dy, world.obstacle_tiles, world.exit_tile)
-    # print(screen_scroll)
+            if player.alive:
+                # Calculate the character's movement
+                dx = 0
+                dy = 0
+                if moving_left == True:
+                    dx = -constants.CHARACTER_SPEED
+                if moving_right == True:
+                    dx = constants.CHARACTER_SPEED
+                if moving_up == True:
+                    dy = -constants.CHARACTER_SPEED
+                if moving_down == True:
+                    dy = constants.CHARACTER_SPEED
 
-    # update 
-    world.update(screen_scroll)
-    for enemy in enemy_list:
-        fireball = enemy.ai(player, world.obstacle_tiles, screen_scroll, fireball_image)
-        if fireball:
-            fireball_group.add(fireball)
-        if enemy.alive:
-            enemy.update()
-    player.update()
-    arrow = bow.update(player)
-    if arrow:
-        arrow_group.add(arrow)
-    for arrow in arrow_group:
-        damage, damage_pos = arrow.update(screen_scroll, world.obstacle_tiles, enemy_list)
-        if damage:
-            damage_text = DamageText(damage_pos.centerx, damage_pos.y, str(damage), constants.RED)
-            damage_text_group.add(damage_text)
-    damage_text_group.update()
-    fireball_group.update(screen_scroll, player)
-    item_group.update(screen_scroll, player)
+                # print(dx, dy)
 
-    # draw the character on screen
-    world.draw(screen)
-    for enemy in enemy_list:
-        enemy.draw(screen)
-    player.draw(screen)
-    bow.draw(screen)
-    for arrow in arrow_group:
-        arrow.draw(screen)
-    for fireball in fireball_group:
-        fireball.draw(screen)
-    damage_text_group.draw(screen)
-    item_group.draw(screen)
-    draw_info()
-    score_coin.draw(screen)
+                # move player
+                screen_scroll, level_complete = player.move(dx, dy, world.obstacle_tiles, world.exit_tile)
+                # print(screen_scroll)
 
-    # check level complete
-    if level_complete:
-        start_intro = True
-        level += 1
-        world_data = reset_level()
-        #load level data and create world
-        with open(f'levels/level{level}_data.csv', newline='') as csvfile:
-            reader = csv.reader(csvfile, delimiter=',')
-            for x, row in enumerate(reader):
-                for y, tile in enumerate(row):
-                    world_data[x][y] = int(tile)
-        world = World()
-        world.process_data(world_data, tile_list, item_images, mob_animation_list)
+                # update 
+                world.update(screen_scroll)
+                for enemy in enemy_list:
+                    fireball = enemy.ai(player, world.obstacle_tiles, screen_scroll, fireball_image)
+                    if fireball:
+                        fireball_group.add(fireball)
+                    if enemy.alive:
+                        enemy.update()
+                player.update()
+                arrow = bow.update(player)
+                if arrow:
+                    arrow_group.add(arrow)
+                    shot_fx.play()
+                for arrow in arrow_group:
+                    damage, damage_pos = arrow.update(screen_scroll, world.obstacle_tiles, enemy_list)
+                    if damage:
+                        damage_text = DamageText(damage_pos.centerx, damage_pos.y, str(damage), constants.RED)
+                        damage_text_group.add(damage_text)
+                        hit_fx.play()
+                damage_text_group.update()
+                fireball_group.update(screen_scroll, player)
+                item_group.update(screen_scroll, player, coin_fx, heal_fx)
 
-        # retain health and score to next level
-        temp_hp = player.health
-        temp_score = player.score
-        player.health = temp_hp
-        player.score = temp_score
+            # draw the character on screen
+            world.draw(screen)
+            for enemy in enemy_list:
+                enemy.draw(screen)
+            player.draw(screen)
+            bow.draw(screen)
+            for arrow in arrow_group:
+                arrow.draw(screen)
+            for fireball in fireball_group:
+                fireball.draw(screen)
+            damage_text_group.draw(screen)
+            item_group.draw(screen)
+            draw_info()
+            score_coin.draw(screen)
 
-        player = world.player
-        enemy_list = world.character_list
-        score_coin = Item(constants.SCREEN_WIDTH - 115, 23, 0, coin_image, True)
-        item_group.add(score_coin)
-        #add the items from the level data, also handles removing items from previous level
-        for item in world.item_list:
-            item_group.add(item)
+            # check level complete
+            if level_complete:
+                start_intro = True
+                level += 1
+                world_data = reset_level()
+                #load level data and create world
+                with open(f'levels/level{level}_data.csv', newline='') as csvfile:
+                    reader = csv.reader(csvfile, delimiter=',')
+                    for x, row in enumerate(reader):
+                        for y, tile in enumerate(row):
+                            world_data[x][y] = int(tile)
+                world = World()
+                world.process_data(world_data, tile_list, item_images, mob_animation_list)
 
-    # show intro
-    if start_intro == True:
-        if intro_fade.fade():
-            start_intro = False
-            intro_fade.fade_counter = 0
+                # retain health and score to next level
+                temp_hp = player.health
+                temp_score = player.score
+                player.health = temp_hp
+                player.score = temp_score
+
+                player = world.player
+                enemy_list = world.character_list
+                score_coin = Item(constants.SCREEN_WIDTH - 115, 23, 0, coin_image, True)
+                item_group.add(score_coin)
+                #add the items from the level data, also handles removing items from previous level
+                for item in world.item_list:
+                    item_group.add(item)
+
+            # show intro
+            if start_intro == True:
+                if intro_fade.fade():
+                    start_intro = False
+                    intro_fade.fade_counter = 0
+
+            # show death screen
+            if player.alive == False:
+                if death_fade.fade():
+                    if restart_button.draw(screen):
+                        death_fade.fade_counter = 0
+                        start_intro = True
+                        world_data = reset_level()
+                        #load level data and create world
+                        with open(f'levels/level{level}_data.csv', newline='') as csvfile:
+                            reader = csv.reader(csvfile, delimiter=',')
+                            for x, row in enumerate(reader):
+                                for y, tile in enumerate(row):
+                                    world_data[x][y] = int(tile)
+                        world = World()
+                        world.process_data(world_data, tile_list, item_images, mob_animation_list)
+
+                        # retain score after death
+                        temp_score = player.score
+                        player.score = temp_score
+
+                        player = world.player
+                        enemy_list = world.character_list
+                        score_coin = Item(constants.SCREEN_WIDTH - 115, 23, 0, coin_image, True)
+                        item_group.add(score_coin)
+                        #add the items from the level data, also handles removing items from previous level
+                        for item in world.item_list:
+                            item_group.add(item)
 
     #event handler
     for event in pygame.event.get():
@@ -322,7 +403,8 @@ while run:
                 moving_up = True
             if event.key == pygame.K_s:
                 moving_down = True
-
+            if event.key == pygame.K_ESCAPE:
+                pause_game = True
         # KeyUp event
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_a:

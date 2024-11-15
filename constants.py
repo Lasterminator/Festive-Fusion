@@ -17,6 +17,7 @@ ENEMY_SPEED  = 4
 
 # Scale
 SCALE = 3
+BUTTON_SCALE = 1
 CHARACTER_SCALE = 3
 BOW_SCALE = 1.5
 ITEM_SCALE = 3
@@ -33,9 +34,10 @@ SHOT_COOLDOWN = 300
 # colors
 RED = (255, 0, 0)
 BGCOLOR = (0, 0, 0)
+MENU_BGCOLOR = (130, 0, 0)
 PANEL = (50, 50, 50)
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
-
+PINK = (235, 65, 54)
 # sprite offset
 CHARACTER_OFFSET = 12
