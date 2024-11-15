@@ -35,6 +35,7 @@ RED = (255, 0, 0)
 BGCOLOR = (0, 0, 0)
 PANEL = (50, 50, 50)
 WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
 
 # sprite offset
 CHARACTER_OFFSET = 12

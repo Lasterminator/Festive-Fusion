@@ -27,9 +27,11 @@ class Character:
         
     
     # move the character
-    def move(self, dx, dy, obstacle_tiles):
+    def move(self, dx, dy, obstacle_tiles, exit_tile = None):
         screen_scroll = [0, 0]
+        level_complete = False
         self.running = False
+
         # check if the character is running
         if dx != 0 or dy != 0:
             self.running = True
@@ -67,6 +69,13 @@ class Character:
 
         # logic only for the player
         if self.character_type == 0:
+            # check collision with exit ladder
+            if exit_tile[1].colliderect(self.rect):
+                #ensure player is close to the center of the exit ladder
+                exit_dist = math.sqrt(((self.rect.centerx - exit_tile[1].centerx) ** 2) + ((self.rect.centery - exit_tile[1].centery) ** 2))
+                if exit_dist < 20:
+                    level_complete = True
+
             # check if the player is out of bounds
             # camera left right
             if self.rect.right > (constants.SCREEN_WIDTH - constants.SCROLL_THRESH):
@@ -83,7 +92,7 @@ class Character:
             if self.rect.bottom > (constants.SCREEN_HEIGHT - constants.SCROLL_THRESH):
                 screen_scroll[1] = (constants.SCREEN_HEIGHT - constants.SCROLL_THRESH) - self.rect.bottom
                 self.rect.bottom = (constants.SCREEN_HEIGHT - constants.SCROLL_THRESH)
-        return screen_scroll
+        return screen_scroll, level_complete
 
     def ai(self, player, obstacle_tiles, screen_scroll, fireball_image):
         clipped_line = ()
