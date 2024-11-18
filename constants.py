@@ -64,6 +64,19 @@ ENEMY_TILE_MAP = {
     }
 }
 
+BASE_TILES = {
+    1: 23,
+    2: 0,
+    3: 0
+}
+
+# Find all obstacle tiles for each level and store in a list
+OBSTACLE_TILES_MAP = {
+    1: [2,3,4,6,10,13,14,16,27,28,29,32,34,35,36,37,39,40,41,42,43,44,48,49,50,52,55,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,80],
+    2: [],
+    3: []
+}
+
 ANIMATION_TYPES = ['idle', 'run']
 # cooldowns
 SHOT_COOLDOWN = 300

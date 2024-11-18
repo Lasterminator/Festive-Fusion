@@ -26,23 +26,23 @@ class World():
                 image_rect.center = (image_x, image_y)
                 tile_data = [image, image_rect, image_x, image_y]
 
-                if tile == 7:
+                if tile in constants.OBSTACLE_TILES_MAP[level]:
                     self.obstacle_tiles.append(tile_data)
                 elif tile == 8:
                     self.exit_tile = tile_data
                 elif tile == 82:
                     coin = Item(image_x, image_y, 0, item_images[0])
                     self.item_list.append(coin)
-                    tile_data[0] = tile_list[0]
+                    tile_data[0] = tile_list[constants.BASE_TILES[level]]
                 elif tile == 84:
                     potion = Item(image_x, image_y, 1, [item_images[1]])
                     self.item_list.append(potion)
-                    tile_data[0] = tile_list[0]
+                    tile_data[0] = tile_list[constants.BASE_TILES[level]]
                 elif tile == 11:
                     # create a character object
                     player = Character(image_x, image_y, 100, mob_animation_list, 0, False, 1)
                     self.player = player
-                    tile_data[0] = tile_list[0]
+                    tile_data[0] = tile_list[constants.BASE_TILES[level]]
                 # BOSS
                 # elif tile == 17:
                 #     enemy = Character(image_x, image_y, 100, mob_animation_list, 6, True, 2)
@@ -52,7 +52,7 @@ class World():
                     enemy_name = list(constants.ENEMY_TILE_MAP[level].keys())[0]
                     enemy = Character(image_x, image_y, 100, mob_animation_list, constants.LEVEL_CHARACTERS[level].index(enemy_name), False, 1)
                     self.character_list.append(enemy)
-                    tile_data[0] = tile_list[0]
+                    tile_data[0] = tile_list[constants.BASE_TILES[level]]
                 #add to map tiles
                 if tile >= 0:
                     self.map_tiles.append(tile_data)
