@@ -21,6 +21,7 @@ clock = pygame.time.Clock()
 
 # define game variables
 level = 1
+current_asset_path = constants.LEVEL_ASSETS[level]
 start_game = False
 pause_game = False
 start_intro = False
@@ -66,13 +67,12 @@ heart_half = scale_image(pygame.image.load('assets/images/items/heart_half.png')
 
 # load coin image
 coin_image = []
-for i in range(4):
-    img = pygame.image.load(f'assets/images/items/coin_f{i}.png').convert_alpha()
-    img = scale_image(img, constants.ITEM_SCALE)
-    coin_image.append(img)
+img = pygame.image.load(f'{current_asset_path}/images/items/{constants.LEVEL_ITEMS[level][0]}.png').convert_alpha()
+img = scale_image(img, constants.ITEM_SCALE)
+coin_image.append(img)
 
 # load health potion image
-red_potion = scale_image(pygame.image.load('assets/images/items/potion_red.png').convert_alpha(), constants.POTION_SCALE)
+red_potion = scale_image(pygame.image.load(f'{current_asset_path}/images/items/{constants.LEVEL_ITEMS[level][1]}.png').convert_alpha(), constants.POTION_SCALE)
 
 item_images = []
 item_images.append(coin_image)
@@ -83,25 +83,28 @@ weapon_image = scale_image(pygame.image.load('assets/images/weapons/bow.png').co
 arrow_image = scale_image(pygame.image.load('assets/images/weapons/arrow.png').convert_alpha(), constants.BOW_SCALE)
 fireball_image = scale_image(pygame.image.load('assets/images/weapons/fireball.png').convert_alpha(), constants.BOW_SCALE)
 
-# load tile_map images
+# load tile_map images based on current level
 tile_list = []
-for x in range(constants.TILE_TYPES):
-    tile_image = pygame.image.load(f'assets/images/tiles/{x}.png').convert_alpha()
+
+tile_count = constants.TILE_TYPES[level]
+
+for x in range(tile_count):
+    tile_image = pygame.image.load(f'{current_asset_path}/images/tiles/{x}.png').convert_alpha()
     tile_image = pygame.transform.scale(tile_image, (constants.TILE_SIZE, constants.TILE_SIZE))
     tile_list.append(tile_image)
 
 
 # load the character image
 mob_animation_list = []
-mob_types = ['elf', 'imp', 'skeleton', 'goblin', 'muddy', 'tiny_zombie', 'big_demon']
-animation_types = ['idle', 'run']
+mob_types = constants.LEVEL_CHARACTERS[level]
+animation_types = constants.ANIMATION_TYPES
 
 for mob in mob_types:
     animation_list = []
     for animation in animation_types:
         temp_list = []
         for i in range(4):
-            img = pygame.image.load(f'assets/images/characters/{mob}/{animation}/{i}.png').convert_alpha()
+            img = pygame.image.load(f'{current_asset_path}/images/characters/{mob}/{animation}/{i}.png').convert_alpha()
             img = scale_image(img, constants.CHARACTER_SCALE)
             temp_list.append(img)
         animation_list.append(temp_list)
@@ -199,14 +202,14 @@ for row in range (constants.ROWS):
     r = [-1] * constants.COLS
     world_data.append(r)
 #load level data and create world
-with open(f'levels/level{level}_data.csv', newline='') as csvfile:
+with open(f'newlevels/level{level}_data.csv', newline='') as csvfile:
     reader = csv.reader(csvfile, delimiter=',')
     for x, row in enumerate(reader):
         for y, tile in enumerate(row):
             world_data[x][y] = int(tile)
 
 world = World()
-world.process_data(world_data, tile_list, item_images, mob_animation_list)
+world.process_data(world_data, tile_list, item_images, mob_animation_list, level)
 
 # create player
 player = world.player
@@ -282,11 +285,9 @@ while run:
                 if moving_down == True:
                     dy = constants.CHARACTER_SPEED
 
-                # print(dx, dy)
-
                 # move player
                 screen_scroll, level_complete = player.move(dx, dy, world.obstacle_tiles, world.exit_tile)
-                # print(screen_scroll)
+
 
                 # update 
                 world.update(screen_scroll)
@@ -332,13 +333,24 @@ while run:
                 level += 1
                 world_data = reset_level()
                 #load level data and create world
-                with open(f'levels/level{level}_data.csv', newline='') as csvfile:
+                with open(f'newlevels/level{level}_data.csv', newline='') as csvfile:
                     reader = csv.reader(csvfile, delimiter=',')
                     for x, row in enumerate(reader):
                         for y, tile in enumerate(row):
                             world_data[x][y] = int(tile)
+
+                # reload tile list for new level
+                tile_list = []
+                current_asset_path = constants.LEVEL_ASSETS[level]
+                tile_count = constants.TILE_TYPES[level]
+
+                for x in range(tile_count):
+                    tile_image = pygame.image.load(f'{current_asset_path}/images/tiles/{x}.png').convert_alpha()
+                    tile_image = pygame.transform.scale(tile_image, (constants.TILE_SIZE, constants.TILE_SIZE))
+                    tile_list.append(tile_image)
+
                 world = World()
-                world.process_data(world_data, tile_list, item_images, mob_animation_list)
+                world.process_data(world_data, tile_list, item_images, mob_animation_list, level)
 
                 # retain health and score to next level
                 temp_hp = player.health
@@ -368,13 +380,13 @@ while run:
                         start_intro = True
                         world_data = reset_level()
                         #load level data and create world
-                        with open(f'levels/level{level}_data.csv', newline='') as csvfile:
+                        with open(f'newlevels/level{level}_data.csv', newline='') as csvfile:
                             reader = csv.reader(csvfile, delimiter=',')
                             for x, row in enumerate(reader):
                                 for y, tile in enumerate(row):
                                     world_data[x][y] = int(tile)
                         world = World()
-                        world.process_data(world_data, tile_list, item_images, mob_animation_list)
+                        world.process_data(world_data, tile_list, item_images, mob_animation_list, level)
 
                         # retain score after death
                         temp_score = player.score
