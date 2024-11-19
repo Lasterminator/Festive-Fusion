@@ -72,6 +72,7 @@ class Character:
             # check collision with exit ladder
             if exit_tile[1].colliderect(self.rect):
                 #ensure player is close to the center of the exit ladder
+                print("1")
                 exit_dist = math.sqrt(((self.rect.centerx - exit_tile[1].centerx) ** 2) + ((self.rect.centery - exit_tile[1].centery) ** 2))
                 if exit_dist < 20:
                     level_complete = True

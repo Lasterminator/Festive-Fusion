@@ -28,7 +28,7 @@ class World():
 
                 if tile in constants.OBSTACLE_TILES_MAP[level]:
                     self.obstacle_tiles.append(tile_data)
-                elif tile == 8:
+                elif tile == constants.EXIT_TILE_MAP[level][0]:
                     self.exit_tile = tile_data
                 elif tile == 82:
                     coin = Item(image_x, image_y, 0, item_images[0])
