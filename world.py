@@ -45,12 +45,12 @@ class World():
                     tile_data[0] = tile_list[constants.BASE_TILES[level]]
                 # BOSS
                 # elif tile == 17:
-                #     enemy = Character(image_x, image_y, 100, mob_animation_list, 6, True, 2)
+                #     enemy = Character(image_x, image_y, 100, mob_animation_list, 6, True, 2, x, y)
                 #     self.character_list.append(enemy)
                 #     tile_data[0] = tile_list[0]
                 elif tile in constants.ENEMY_TILE_MAP[level].values():
                     enemy_name = list(constants.ENEMY_TILE_MAP[level].keys())[0]
-                    enemy = Character(image_x, image_y, 100, mob_animation_list, constants.LEVEL_CHARACTERS[level].index(enemy_name), False, 1)
+                    enemy = Character(image_x, image_y, 100, mob_animation_list, constants.LEVEL_CHARACTERS[level].index(enemy_name), False, 1, x, y)
                     self.character_list.append(enemy)
                     tile_data[0] = tile_list[constants.BASE_TILES[level]]
                 #add to map tiles

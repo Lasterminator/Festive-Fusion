@@ -36,11 +36,15 @@ class Item(pygame.sprite.Sprite):
                     player.health = 100
             # Read existing collected items
             existing_items = []
+            killed_enemies = []
             try:
                 with open('tmp_save.txt', 'r') as f:
                     for line in f:
                         if line.startswith('COLLECTED_ITEMS:'):
                             existing_items = eval(line.split(':')[1])
+                            break
+                        elif line.startswith('KILLED_ENEMIES:'):
+                            killed_enemies = eval(line.split(':')[1])
                             break
             except FileNotFoundError:
                 pass
@@ -52,6 +56,7 @@ class Item(pygame.sprite.Sprite):
             # Write back all items
             with open('tmp_save.txt', 'w') as f:
                 f.write(f"COLLECTED_ITEMS:{existing_items}\n")
+                f.write(f"KILLED_ENEMIES:{killed_enemies}\n")
             self.kill()
 
         # handle the item animation

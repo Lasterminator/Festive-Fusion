@@ -259,6 +259,7 @@ def save_game_state():
     level2_player_score = 0
     level3_player_score = 0
     collected_items = []
+    killed_enemies = []
 
     # Read collected items from temp_save.txt
     try:
@@ -267,6 +268,8 @@ def save_game_state():
                 key, value = line.strip().split(':')
                 if key == 'COLLECTED_ITEMS':
                     collected_items = eval(value)
+                elif key == 'KILLED_ENEMIES':
+                    killed_enemies = eval(value)
     except FileNotFoundError:
         pass
 
@@ -289,7 +292,8 @@ def save_game_state():
         'level1_player_score': player.score if level == 1 else level1_player_score,
         'level2_player_score': player.score if level == 2 else level2_player_score,
         'level3_player_score': player.score if level == 3 else level3_player_score,
-        'collected_items': collected_items
+        'COLLECTED_ITEMS': collected_items,
+        'KILLED_ENEMIES': killed_enemies
     }
 
     with open('save_game.txt', 'w') as f:
@@ -302,7 +306,7 @@ def load_game_state():
         with open('save_game.txt', 'r') as f:
             for line in f:
                 key, value = line.strip().split(':')
-                if key == 'collected_items':
+                if key == 'COLLECTED_ITEMS' or key == 'KILLED_ENEMIES':
                     # Convert string representation of list to actual list
                     game_state[key] = eval(value)
                 else:
@@ -364,6 +368,15 @@ while run:
                     
                 world = World()
                 world.process_data(world_data, tile_list, item_images, mob_animation_list, level)
+                
+                # Remove killed enemies
+                if 'KILLED_ENEMIES' in game_state:
+                    for enemy in world.character_list[:]:
+                        enemy_x = enemy.CSV_X
+                        enemy_y = enemy.CSV_Y
+                        if (enemy_x, enemy_y) in game_state['KILLED_ENEMIES']:
+                            world.character_list.remove(enemy)
+
                 player = world.player
                 player.score = game_state[f'level{level}_player_score']
                 
@@ -374,8 +387,8 @@ while run:
 
                 # Get collected items from saved game
                 collected_items = []
-                if game_state and 'collected_items' in game_state:
-                    collected_items = game_state['collected_items']
+                if game_state and 'COLLECTED_ITEMS' in game_state:
+                    collected_items = game_state['COLLECTED_ITEMS']
 
                 # Filter out collected items using CSV indices
                 for item in world.item_list[:]:  # Create a copy of the list to iterate
