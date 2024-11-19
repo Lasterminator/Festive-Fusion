@@ -27,7 +27,7 @@ FIREBALL_SCALE = 1
 # Tile 
 TILE_SIZE = 16 * SCALE
 TILE_TYPES = {
-    1: 85,
+    1: 86,
     2: 63,
     3: 81
 }

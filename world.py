@@ -38,7 +38,7 @@ class World():
                     potion = Item(image_x, image_y, 1, [item_images[1]])
                     self.item_list.append(potion)
                     tile_data[0] = tile_list[constants.BASE_TILES[level]]
-                elif tile == 11:
+                elif tile == 85:
                     # create a character object
                     player = Character(image_x, image_y, 100, mob_animation_list, 0, False, 1)
                     self.player = player
