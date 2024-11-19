@@ -58,7 +58,8 @@ start_img = scale_image(pygame.image.load('assets/images/buttons/button_start.pn
 restart_img = scale_image(pygame.image.load('assets/images/buttons/button_restart.png').convert_alpha(), constants.BUTTON_SCALE)
 exit_img = scale_image(pygame.image.load('assets/images/buttons/button_exit.png').convert_alpha(), constants.BUTTON_SCALE)
 resume_img = scale_image(pygame.image.load('assets/images/buttons/button_resume.png').convert_alpha(), constants.BUTTON_SCALE)
-
+save_img = scale_image(pygame.image.load('assets/images/buttons/button_save.png').convert_alpha(), constants.SAVE_BUTTON_SCALE)
+load_img = scale_image(pygame.image.load('assets/images/buttons/button_load.png').convert_alpha(), constants.LOAD_BUTTON_SCALE)
 
 # load heart image
 heart_empty = scale_image(pygame.image.load('assets/images/items/heart_empty.png').convert_alpha(), constants.ITEM_SCALE)
@@ -247,8 +248,72 @@ death_fade = ScreenFade(2, constants.PINK, 4)
 # create button
 start_button = Button(constants.SCREEN_WIDTH // 2 - 145, constants.SCREEN_HEIGHT // 2 - 150, start_img)
 restart_button = Button(constants.SCREEN_WIDTH // 2 - 175, constants.SCREEN_HEIGHT // 2 - 50, restart_img)
+save_button = Button(constants.SCREEN_WIDTH // 2 - 110, constants.SCREEN_HEIGHT // 2 - 50, save_img)
+load_button = Button(constants.SCREEN_WIDTH // 2 - 110, constants.SCREEN_HEIGHT // 2 - 50, load_img)
 exit_button = Button(constants.SCREEN_WIDTH // 2 - 110, constants.SCREEN_HEIGHT // 2 + 50, exit_img)
 resume_button = Button(constants.SCREEN_WIDTH // 2 - 175, constants.SCREEN_HEIGHT // 2 - 150, resume_img)
+
+
+def save_game_state():
+    level1_player_score = 0
+    level2_player_score = 0
+    level3_player_score = 0
+    collected_items = []
+
+    # Get tile positions of all collected items from world_data
+    for y, row in enumerate(world_data):
+        for x, tile in enumerate(row):
+            if tile == 82 or tile == 84:  # Check for item tiles (coin or potion)
+                # Check if this position has an item that's been collected
+                item_exists = False
+                for item in world.item_list:
+                    if (item.rect.centerx == x * constants.TILE_SIZE and 
+                        item.rect.centery == y * constants.TILE_SIZE):
+                        item_exists = True
+                        break
+                if not item_exists:
+                    collected_items.append([x, y])
+
+    # Read existing scores from save file
+    try:
+        with open('save_game.txt', 'r') as f:
+            for line in f:
+                key, value = line.strip().split(':')
+                if key == 'level1_player_score':
+                    level1_player_score = int(value)
+                elif key == 'level2_player_score':
+                    level2_player_score = int(value)
+                elif key == 'level3_player_score':
+                    level3_player_score = int(value)
+    except FileNotFoundError:
+        pass
+
+    game_state = {
+        'level': level,
+        'level1_player_score': player.score if level == 1 else level1_player_score,
+        'level2_player_score': player.score if level == 2 else level2_player_score,
+        'level3_player_score': player.score if level == 3 else level3_player_score,
+        'collected_items': collected_items
+    }
+
+    with open('save_game.txt', 'w') as f:
+        for key, value in game_state.items():
+            f.write(f"{key}:{value}\n")
+
+def load_game_state():
+    try:
+        game_state = {}
+        with open('save_game.txt', 'r') as f:
+            for line in f:
+                key, value = line.strip().split(':')
+                if key == 'collected_items':
+                    # Convert string representation of list to actual list
+                    game_state[key] = eval(value)
+                else:
+                    game_state[key] = int(value)
+        return game_state
+    except FileNotFoundError:
+        return None
 
 # main game loop
 run = True
@@ -261,6 +326,62 @@ while run:
         if start_button.draw(screen):
             start_game = True
             start_intro = True
+        if load_button.draw(screen):
+            game_state = load_game_state()
+            if game_state:
+                level = game_state['level']
+                start_game = True
+                start_intro = True
+                # Initialize world with loaded level
+                world_data = reset_level()
+                
+                # Update current asset path and reload necessary assets for the level
+                current_asset_path = constants.LEVEL_ASSETS[level]
+                
+                # Reload coin images for current level
+                coin_image = []
+                img = pygame.image.load(f'{current_asset_path}/images/items/{constants.LEVEL_ITEMS[level][0]}.png').convert_alpha()
+                img = scale_image(img, constants.ITEM_SCALE)
+                coin_image.append(img)
+                
+                # Reload item images
+                item_images = []
+                item_images.append(coin_image)
+                if len(constants.LEVEL_ITEMS[level]) > 1:
+                    red_potion = scale_image(pygame.image.load(f'{current_asset_path}/images/items/{constants.LEVEL_ITEMS[level][1]}.png').convert_alpha(), constants.POTION_SCALE)
+                    item_images.append(red_potion)
+                
+                # Reload tile list
+                tile_list = []
+                tile_count = constants.TILE_TYPES[level]
+                for x in range(tile_count):
+                    tile_image = pygame.image.load(f'{current_asset_path}/images/tiles/{x}.png').convert_alpha()
+                    tile_image = pygame.transform.scale(tile_image, (constants.TILE_SIZE, constants.TILE_SIZE))
+                    tile_list.append(tile_image)
+                    
+                # Load level data
+                with open(f'newlevels/level{level}_data.csv', newline='') as csvfile:
+                    reader = csv.reader(csvfile, delimiter=',')
+                    for x, row in enumerate(reader):
+                        for y, tile in enumerate(row):
+                            world_data[x][y] = int(tile)
+                    
+                world = World()
+                world.process_data(world_data, tile_list, item_images, mob_animation_list, level)
+                player = world.player
+                player.score = game_state[f'level{level}_player_score']
+                
+                # Reset and recreate item groups
+                item_group.empty()
+                score_coin = Item(constants.SCREEN_WIDTH - 115, 23, 0, coin_collect_image, True)
+                item_group.add(score_coin)
+                for item in world.item_list[:]:  # Create a copy of the list to iterate
+                    item_tile_x = int(item.rect.centerx / constants.TILE_SIZE)
+                    item_tile_y = int(item.rect.centery / constants.TILE_SIZE)
+                    if game_state.get('collected_items') and (item_tile_x, item_tile_y) in game_state['collected_items']:
+                        world.item_list.remove(item)
+                    else:
+                        item_group.add(item)
         if exit_button.draw(screen):
             run = False
 
@@ -268,6 +389,9 @@ while run:
         if pause_game == True:
             screen.fill(constants.MENU_BGCOLOR)
             if resume_button.draw(screen):
+                pause_game = False
+            if save_button.draw(screen):
+                save_game_state()
                 pause_game = False
             if exit_button.draw(screen):
                 run = False

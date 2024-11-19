@@ -1,0 +1,5 @@
+level:1
+level1_player_score:1
+level2_player_score:0
+level3_player_score:0
+collected_items:[[30, 9], [79, 13], [88, 51], [76, 65], [143, 103], [99, 106], [47, 114], [139, 118], [126, 127], [29, 142]]
