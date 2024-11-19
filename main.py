@@ -71,6 +71,11 @@ img = pygame.image.load(f'{current_asset_path}/images/items/{constants.LEVEL_ITE
 img = scale_image(img, constants.ITEM_SCALE)
 coin_image.append(img)
 
+coin_collect_image = []
+img = pygame.image.load(f'{current_asset_path}/images/items/{constants.LEVEL_ITEMS[level][0]}.png').convert_alpha()
+img = scale_image(img, constants.ITEM_COLLECT_SCALE)
+coin_collect_image.append(img)
+
 # load health potion image
 red_potion = scale_image(pygame.image.load(f'{current_asset_path}/images/items/{constants.LEVEL_ITEMS[level][1]}.png').convert_alpha(), constants.POTION_SCALE)
 
@@ -228,7 +233,7 @@ arrow_group = pygame.sprite.Group()
 item_group = pygame.sprite.Group()
 fireball_group = pygame.sprite.Group()
 
-score_coin = Item(constants.SCREEN_WIDTH - 115, 23, 0, coin_image, True)
+score_coin = Item(constants.SCREEN_WIDTH - 115, 23, 0, coin_collect_image, True)
 item_group.add(score_coin)
 
 #add the items from the level data
@@ -360,7 +365,7 @@ while run:
 
                 player = world.player
                 enemy_list = world.character_list
-                score_coin = Item(constants.SCREEN_WIDTH - 115, 23, 0, coin_image, True)
+                score_coin = Item(constants.SCREEN_WIDTH - 115, 23, 0, coin_collect_image, True)
                 item_group.add(score_coin)
                 #add the items from the level data, also handles removing items from previous level
                 for item in world.item_list:
@@ -394,7 +399,7 @@ while run:
 
                         player = world.player
                         enemy_list = world.character_list
-                        score_coin = Item(constants.SCREEN_WIDTH - 115, 23, 0, coin_image, True)
+                        score_coin = Item(constants.SCREEN_WIDTH - 115, 23, 0, coin_collect_image, True)
                         item_group.add(score_coin)
                         #add the items from the level data, also handles removing items from previous level
                         for item in world.item_list:
