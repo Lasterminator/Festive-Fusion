@@ -31,11 +31,11 @@ class World():
                 elif tile == constants.EXIT_TILE_MAP[level][0]:
                     self.exit_tile = tile_data
                 elif tile == 82:
-                    coin = Item(image_x, image_y, 0, item_images[0])
+                    coin = Item(image_x, image_y, 0, item_images[0], False, x, y)
                     self.item_list.append(coin)
                     tile_data[0] = tile_list[constants.BASE_TILES[level]]
                 elif tile == 84:
-                    potion = Item(image_x, image_y, 1, [item_images[1]])
+                    potion = Item(image_x, image_y, 1, [item_images[1]], False, x, y)
                     self.item_list.append(potion)
                     tile_data[0] = tile_list[constants.BASE_TILES[level]]
                 elif tile == 85:

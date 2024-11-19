@@ -4,7 +4,7 @@ import random
 import constants
 
 class Item(pygame.sprite.Sprite):  
-    def __init__(self, x, y, item_type, animation_list, dummy_coin = False):
+    def __init__(self, x, y, item_type, animation_list, dummy_coin = False, CSV_X = 0, CSV_Y = 0):
         pygame.sprite.Sprite.__init__(self)
         self.item_type = item_type # 0 = coin, 1 = health potion
         self.animation_list = animation_list
@@ -14,8 +14,10 @@ class Item(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.center = (x, y)
         self.dummy_coin = dummy_coin
+        self.CSV_X = CSV_X
+        self.CSV_Y = CSV_Y
     
-    def update(self, screen_scroll, player, coin_fx, heal_fx):
+    def update(self, screen_scroll, player, coin_fx, heal_fx, level):
         #reposition based on screen scroll
         if not self.dummy_coin:
             self.rect.x += screen_scroll[0]
@@ -32,6 +34,24 @@ class Item(pygame.sprite.Sprite):
                 heal_fx.play()
                 if player.health > 100:
                     player.health = 100
+            # Read existing collected items
+            existing_items = []
+            try:
+                with open('tmp_save.txt', 'r') as f:
+                    for line in f:
+                        if line.startswith('COLLECTED_ITEMS:'):
+                            existing_items = eval(line.split(':')[1])
+                            break
+            except FileNotFoundError:
+                pass
+
+            # Add new item if not already collected
+            if (self.CSV_X, self.CSV_Y) not in existing_items:
+                existing_items.append((self.CSV_X, self.CSV_Y))
+                
+            # Write back all items
+            with open('tmp_save.txt', 'w') as f:
+                f.write(f"COLLECTED_ITEMS:{existing_items}\n")
             self.kill()
 
         # handle the item animation

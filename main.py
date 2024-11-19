@@ -260,19 +260,15 @@ def save_game_state():
     level3_player_score = 0
     collected_items = []
 
-    # Get tile positions of all collected items from world_data
-    for y, row in enumerate(world_data):
-        for x, tile in enumerate(row):
-            if tile == 82 or tile == 84:  # Check for item tiles (coin or potion)
-                # Check if this position has an item that's been collected
-                item_exists = False
-                for item in world.item_list:
-                    if (item.rect.centerx == x * constants.TILE_SIZE and 
-                        item.rect.centery == y * constants.TILE_SIZE):
-                        item_exists = True
-                        break
-                if not item_exists:
-                    collected_items.append([x, y])
+    # Read collected items from temp_save.txt
+    try:
+        with open('tmp_save.txt', 'r') as f:
+            for line in f:
+                key, value = line.strip().split(':')
+                if key == 'COLLECTED_ITEMS':
+                    collected_items = eval(value)
+    except FileNotFoundError:
+        pass
 
     # Read existing scores from save file
     try:
@@ -375,10 +371,15 @@ while run:
                 item_group.empty()
                 score_coin = Item(constants.SCREEN_WIDTH - 115, 23, 0, coin_collect_image, True)
                 item_group.add(score_coin)
+
+                # Get collected items from saved game
+                collected_items = []
+                if game_state and 'collected_items' in game_state:
+                    collected_items = game_state['collected_items']
+
+                # Filter out collected items using CSV indices
                 for item in world.item_list[:]:  # Create a copy of the list to iterate
-                    item_tile_x = int(item.rect.centerx / constants.TILE_SIZE)
-                    item_tile_y = int(item.rect.centery / constants.TILE_SIZE)
-                    if game_state.get('collected_items') and (item_tile_x, item_tile_y) in game_state['collected_items']:
+                    if (item.CSV_X, item.CSV_Y) in collected_items:
                         world.item_list.remove(item)
                     else:
                         item_group.add(item)
@@ -439,7 +440,7 @@ while run:
                         hit_fx.play()
                 damage_text_group.update()
                 fireball_group.update(screen_scroll, player)
-                item_group.update(screen_scroll, player, coin_fx, heal_fx)
+                item_group.update(screen_scroll, player, coin_fx, heal_fx, level)
 
             # draw the character on screen
             world.draw(screen)
