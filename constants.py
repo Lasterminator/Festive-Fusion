@@ -37,9 +37,9 @@ TILE_TYPES = {
 }
 
 LEVEL_ASSETS = {
-    1: "newassets/level1/",
-    2: "newassets/level2/",
-    3: "newassets/level3/"
+    1: "assets/level1/",
+    2: "assets/level2/",
+    3: "assets/level3/"
 }
 
 LEVEL_CHARACTERS = {

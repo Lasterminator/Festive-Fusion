@@ -232,7 +232,7 @@ for row in range (constants.ROWS):
     r = [-1] * constants.COLS
     world_data.append(r)
 #load level data and create world
-with open(f'newlevels/level{level}_data.csv', newline='') as csvfile:
+with open(f'levels/level{level}_data.csv', newline='') as csvfile:
     reader = csv.reader(csvfile, delimiter=',')
     for x, row in enumerate(reader):
         for y, tile in enumerate(row):
@@ -418,7 +418,7 @@ while run:
                             tile_list.append(tile_image)
                             
                         # Load level data
-                        with open(f'newlevels/level{level}_data.csv', newline='') as csvfile:
+                        with open(f'levels/level{level}_data.csv', newline='') as csvfile:
                             reader = csv.reader(csvfile, delimiter=',')
                             for x, row in enumerate(reader):
                                 for y, tile in enumerate(row):
@@ -547,7 +547,7 @@ while run:
                         level += 1
                         world_data = reset_level()
                         #load level data and create world
-                        with open(f'newlevels/level{level}_data.csv', newline='') as csvfile:
+                        with open(f'levels/level{level}_data.csv', newline='') as csvfile:
                             reader = csv.reader(csvfile, delimiter=',')
                             for x, row in enumerate(reader):
                                 for y, tile in enumerate(row):
@@ -611,7 +611,7 @@ while run:
                             start_intro = True
                             world_data = reset_level()
                             #load level data and create world
-                            with open(f'newlevels/level{level}_data.csv', newline='') as csvfile:
+                            with open(f'levels/level{level}_data.csv', newline='') as csvfile:
                                 reader = csv.reader(csvfile, delimiter=',')
                                 for x, row in enumerate(reader):
                                     for y, tile in enumerate(row):
