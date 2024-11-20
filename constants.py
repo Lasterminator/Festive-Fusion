@@ -10,7 +10,7 @@ ATTACK_RANGE = 60
 FPS = 60
 
 # speed
-CHARACTER_SPEED = 15
+CHARACTER_SPEED = 30
 ARROW_SPEED = 10
 FIREBALL_SPEED = 4
 ENEMY_SPEED  = 4
@@ -20,6 +20,7 @@ SCALE = 3
 BUTTON_SCALE = 0.5
 SAVE_BUTTON_SCALE = 0.5
 LOAD_BUTTON_SCALE = 0.5
+LEADERBOARD_BUTTON_SCALE = 0.5
 CHARACTER_SCALE = 3
 BOW_SCALE = 1.5
 ITEM_SCALE = 3
@@ -31,8 +32,8 @@ FIREBALL_SCALE = 1
 TILE_SIZE = 16 * SCALE
 TILE_TYPES = {
     1: 86,
-    2: 63,
-    3: 81
+    2: 86,
+    3: 86
 }
 
 LEVEL_ASSETS = {
@@ -43,14 +44,14 @@ LEVEL_ASSETS = {
 
 LEVEL_CHARACTERS = {
     1: ['elf', 'turkey'],
-    2: ['elf', 'dracula', 'bat', 'ghost'],
-    3: ['elf', 'snowman']
+    2: ['elf', 'turkey'],
+    3: ['elf', 'turkey']
 }
 
 LEVEL_ITEMS = {
     1: ['chest', 'meat'],
-    2: ['chest'],
-    3: ['chest']
+    2: ['chest', 'meat'],
+    3: ['chest', 'meat']
 }
 
 ENEMY_TILE_MAP = {
@@ -58,32 +59,30 @@ ENEMY_TILE_MAP = {
     'turkey': 83,
     },
     2: {
-    'dracula': 3,
-    'bat': 4,
-    'ghost': 5,
+    'turkey': 83,
     },
     3: {
-    'snowman': 6
+    'turkey': 83,
     }
 }
 
 EXIT_TILE_MAP = {
     1: [74],
-    2: [],
-    3: []
+    2: [74],
+    3: [74]
 }
 
 BASE_TILES = {
     1: 23,
-    2: 0,
-    3: 0
+    2: 23,
+    3: 23
 }
 
 # Find all obstacle tiles for each level and store in a list
 OBSTACLE_TILES_MAP = {
     1: [2,3,4,6,10,13,14,16,27,28,29,32,34,35,36,37,39,40,41,42,43,44,48,49,50,52,55,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,76,77,80],
-    2: [],
-    3: []
+    2: [2,3,4,6,10,13,14,16,27,28,29,32,34,35,36,37,39,40,41,42,43,44,48,49,50,52,55,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,76,77,80],
+    3: [2,3,4,6,10,13,14,16,27,28,29,32,34,35,36,37,39,40,41,42,43,44,48,49,50,52,55,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,76,77,80]
 }
 
 REWARD_MAP = {
