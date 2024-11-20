@@ -31,11 +31,11 @@ class World():
                 elif tile == constants.EXIT_TILE_MAP[level][0]:
                     self.exit_tile = tile_data
                 elif tile == 82:
-                    coin = Item(image_x, image_y, 0, item_images[0], False, x, y)
+                    coin = Item(image_x, image_y, 0, item_images[0], False, y, x)
                     self.item_list.append(coin)
                     tile_data[0] = tile_list[constants.BASE_TILES[level]]
                 elif tile == 84:
-                    potion = Item(image_x, image_y, 1, [item_images[1]], False, x, y)
+                    potion = Item(image_x, image_y, 1, [item_images[1]], False, y, x)
                     self.item_list.append(potion)
                     tile_data[0] = tile_list[constants.BASE_TILES[level]]
                 elif tile == 85:
@@ -50,7 +50,7 @@ class World():
                 #     tile_data[0] = tile_list[0]
                 elif tile in constants.ENEMY_TILE_MAP[level].values():
                     enemy_name = list(constants.ENEMY_TILE_MAP[level].keys())[0]
-                    enemy = Character(image_x, image_y, 100, mob_animation_list, constants.LEVEL_CHARACTERS[level].index(enemy_name), False, 1, x, y)
+                    enemy = Character(image_x, image_y, 100, mob_animation_list, constants.LEVEL_CHARACTERS[level].index(enemy_name), False, 1, y, x)
                     self.character_list.append(enemy)
                     tile_data[0] = tile_list[constants.BASE_TILES[level]]
                 #add to map tiles

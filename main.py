@@ -328,6 +328,7 @@ while run:
             start_intro = True
         if load_button.draw(screen):
             game_state = load_game_state()
+            print(game_state['KILLED_ENEMIES'], type(game_state['KILLED_ENEMIES']))
             if game_state:
                 level = game_state['level']
                 start_game = True
@@ -374,8 +375,10 @@ while run:
                     for enemy in world.character_list[:]:
                         enemy_x = enemy.CSV_X
                         enemy_y = enemy.CSV_Y
+                        print(enemy_x, enemy_y)
                         if (enemy_x, enemy_y) in game_state['KILLED_ENEMIES']:
                             world.character_list.remove(enemy)
+                enemy_list = world.character_list
 
                 player = world.player
                 player.score = game_state[f'level{level}_player_score']

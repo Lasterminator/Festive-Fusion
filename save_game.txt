@@ -2,4 +2,5 @@ level:1
 level1_player_score:1
 level2_player_score:0
 level3_player_score:0
-collected_items:[(79, 13)]
+COLLECTED_ITEMS:[(9, 30)]
+KILLED_ENEMIES:[(11, 51), (10, 26), (18, 51)]
