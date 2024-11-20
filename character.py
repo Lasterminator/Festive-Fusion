@@ -74,7 +74,6 @@ class Character:
             # check collision with exit ladder
             if exit_tile[1].colliderect(self.rect):
                 #ensure player is close to the center of the exit ladder
-                print("1")
                 exit_dist = math.sqrt(((self.rect.centerx - exit_tile[1].centerx) ** 2) + ((self.rect.centery - exit_tile[1].centery) ** 2))
                 if exit_dist < 20:
                     level_complete = True
@@ -162,13 +161,14 @@ class Character:
 
     # update the character's animation
     def update(self):
+        isEnemy = self.character_type != 0
+        isEnemyDead = False
 
         # check if the character is alive
         if self.health <= 0:
             self.health = 0
             if self.alive:  # Only add to killed list once when enemy dies
-                if self.character_type != 0:  # Don't track hero's death
-                    print("Saving killed enemies")
+                if isEnemy:  # Don't track hero's death
                     with open('tmp_save.txt', 'r') as f:
                         existing_items = []
                         killed_enemies = []
@@ -185,6 +185,7 @@ class Character:
                         f.write(f"COLLECTED_ITEMS:{existing_items}\n")
                         f.write(f"KILLED_ENEMIES:{killed_enemies}\n")
             self.alive = False
+            isEnemyDead = True
 
         # timer to reset player taking a hit
         hit_cooldown = 1000
@@ -209,6 +210,8 @@ class Character:
         # check if we have run out of frames
         if self.frame_index >= len(self.animation_list[self.action]):
             self.frame_index = 0
+
+        return isEnemy and isEnemyDead
 
     # update the character's action (walking or running)
     def update_action(self, new_action):

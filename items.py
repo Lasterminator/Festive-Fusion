@@ -17,7 +17,7 @@ class Item(pygame.sprite.Sprite):
         self.CSV_X = CSV_X
         self.CSV_Y = CSV_Y
     
-    def update(self, screen_scroll, player, coin_fx, heal_fx, level):
+    def update(self, screen_scroll, player, coin_fx, heal_fx, level, player_score):
         #reposition based on screen scroll
         if not self.dummy_coin:
             self.rect.x += screen_scroll[0]
@@ -28,6 +28,7 @@ class Item(pygame.sprite.Sprite):
             #coin collected
             if self.item_type == 0:
                 player.score += 1
+                player_score += constants.REWARD_MAP['coin']
                 coin_fx.play()
             elif self.item_type == 1:
                 player.health += 20

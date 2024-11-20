@@ -17,9 +17,9 @@ ENEMY_SPEED  = 4
 
 # Scale
 SCALE = 3
-BUTTON_SCALE = 1
-SAVE_BUTTON_SCALE = 1
-LOAD_BUTTON_SCALE = 1
+BUTTON_SCALE = 0.5
+SAVE_BUTTON_SCALE = 0.5
+LOAD_BUTTON_SCALE = 0.5
 CHARACTER_SCALE = 3
 BOW_SCALE = 1.5
 ITEM_SCALE = 3
@@ -86,12 +86,21 @@ OBSTACLE_TILES_MAP = {
     3: []
 }
 
+REWARD_MAP = {
+    'enemy': 100,
+    'coin': 10
+}
+
 ANIMATION_TYPES = ['idle', 'run']
 # cooldowns
 SHOT_COOLDOWN = 300
 
 # colors
 RED = (255, 0, 0)
+GREEN = (0, 255, 0)
+BLUE = (0, 0, 255)
+CYAN = (0, 255, 255)
+YELLOW = (255, 255, 0)
 BGCOLOR = (0, 0, 0)
 MENU_BGCOLOR = (130, 0, 0)
 PANEL = (50, 50, 50)

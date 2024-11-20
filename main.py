@@ -26,6 +26,8 @@ start_game = False
 pause_game = False
 start_intro = False
 screen_scroll = [0, 0]
+player_score = 0
+previous_player_score = 0
 
 # define character movement variables
 moving_left = False
@@ -134,10 +136,13 @@ def draw_info():
         else:
             screen.blit(heart_empty, (10 + i * 50, 0))
 
-    # level
-    draw_text("Level: "+str(level), font, constants.WHITE, constants.SCREEN_WIDTH / 2, 15)
     #show score
-    draw_text(f'X{player.score}', font, constants.WHITE, constants.SCREEN_WIDTH - 100, 15)
+    draw_text(f'Score: {player_score}', font, constants.YELLOW, constants.SCREEN_WIDTH / 2 + 75, 15)
+
+    # level
+    draw_text("Level: "+str(level), font, constants.CYAN, constants.SCREEN_WIDTH / 2 - 110, 15)
+    #show score
+    draw_text(f'X{player.score}', font, constants.WHITE, constants.SCREEN_WIDTH - 60, 15)
 
 def draw_grid():
     for x in range (30):
@@ -234,7 +239,7 @@ arrow_group = pygame.sprite.Group()
 item_group = pygame.sprite.Group()
 fireball_group = pygame.sprite.Group()
 
-score_coin = Item(constants.SCREEN_WIDTH - 115, 23, 0, coin_collect_image, True)
+score_coin = Item(constants.SCREEN_WIDTH - 81, 23, 0, coin_collect_image, True)
 item_group.add(score_coin)
 
 #add the items from the level data
@@ -246,12 +251,12 @@ intro_fade = ScreenFade(1, constants.BLACK, 4)
 death_fade = ScreenFade(2, constants.PINK, 4)
 
 # create button
-start_button = Button(constants.SCREEN_WIDTH // 2 - 145, constants.SCREEN_HEIGHT // 2 - 150, start_img)
-restart_button = Button(constants.SCREEN_WIDTH // 2 - 175, constants.SCREEN_HEIGHT // 2 - 50, restart_img)
+start_button = Button(constants.SCREEN_WIDTH // 2 - 110, constants.SCREEN_HEIGHT // 2 - 150, start_img)
+restart_button = Button(constants.SCREEN_WIDTH // 2 - 110, constants.SCREEN_HEIGHT // 2 - 50, restart_img)
 save_button = Button(constants.SCREEN_WIDTH // 2 - 110, constants.SCREEN_HEIGHT // 2 - 50, save_img)
 load_button = Button(constants.SCREEN_WIDTH // 2 - 110, constants.SCREEN_HEIGHT // 2 - 50, load_img)
 exit_button = Button(constants.SCREEN_WIDTH // 2 - 110, constants.SCREEN_HEIGHT // 2 + 50, exit_img)
-resume_button = Button(constants.SCREEN_WIDTH // 2 - 175, constants.SCREEN_HEIGHT // 2 - 150, resume_img)
+resume_button = Button(constants.SCREEN_WIDTH // 2 - 110, constants.SCREEN_HEIGHT // 2 - 150, resume_img)
 
 
 def save_game_state():
@@ -328,7 +333,7 @@ while run:
             start_intro = True
         if load_button.draw(screen):
             game_state = load_game_state()
-            print(game_state['KILLED_ENEMIES'], type(game_state['KILLED_ENEMIES']))
+
             if game_state:
                 level = game_state['level']
                 start_game = True
@@ -375,7 +380,6 @@ while run:
                     for enemy in world.character_list[:]:
                         enemy_x = enemy.CSV_X
                         enemy_y = enemy.CSV_Y
-                        print(enemy_x, enemy_y)
                         if (enemy_x, enemy_y) in game_state['KILLED_ENEMIES']:
                             world.character_list.remove(enemy)
                 enemy_list = world.character_list
@@ -385,7 +389,7 @@ while run:
                 
                 # Reset and recreate item groups
                 item_group.empty()
-                score_coin = Item(constants.SCREEN_WIDTH - 115, 23, 0, coin_collect_image, True)
+                score_coin = Item(constants.SCREEN_WIDTH - 81, 23, 0, coin_collect_image, True)
                 item_group.add(score_coin)
 
                 # Get collected items from saved game
@@ -442,7 +446,10 @@ while run:
                     if fireball:
                         fireball_group.add(fireball)
                     if enemy.alive:
-                        enemy.update()
+                        isEnemyDead = enemy.update()
+                        if isEnemyDead:
+                            player_score += constants.REWARD_MAP['enemy']
+
                 player.update()
                 arrow = bow.update(player)
                 if arrow:
@@ -456,7 +463,10 @@ while run:
                         hit_fx.play()
                 damage_text_group.update()
                 fireball_group.update(screen_scroll, player)
-                item_group.update(screen_scroll, player, coin_fx, heal_fx, level)
+                item_group.update(screen_scroll, player, coin_fx, heal_fx, level, player_score)
+                if player.score != previous_player_score:
+                    previous_player_score = player.score
+                    player_score += constants.REWARD_MAP['coin']
 
             # draw the character on screen
             world.draw(screen)
@@ -506,7 +516,7 @@ while run:
 
                 player = world.player
                 enemy_list = world.character_list
-                score_coin = Item(constants.SCREEN_WIDTH - 115, 23, 0, coin_collect_image, True)
+                score_coin = Item(constants.SCREEN_WIDTH - 81, 23, 0, coin_collect_image, True)
                 item_group.add(score_coin)
                 #add the items from the level data, also handles removing items from previous level
                 for item in world.item_list:
@@ -540,7 +550,7 @@ while run:
 
                         player = world.player
                         enemy_list = world.character_list
-                        score_coin = Item(constants.SCREEN_WIDTH - 115, 23, 0, coin_collect_image, True)
+                        score_coin = Item(constants.SCREEN_WIDTH - 81, 23, 0, coin_collect_image, True)
                         item_group.add(score_coin)
                         #add the items from the level data, also handles removing items from previous level
                         for item in world.item_list:
