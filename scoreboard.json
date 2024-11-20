@@ -1,8 +1,16 @@
 {
     "scores": [
         {
+            "name": "what",
+            "score": 660
+        },
+        {
             "name": "a",
             "score": 210
+        },
+        {
+            "name": "sdasd",
+            "score": 0
         }
     ]
 }

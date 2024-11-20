@@ -30,24 +30,19 @@ class World():
                     self.obstacle_tiles.append(tile_data)
                 elif tile == constants.EXIT_TILE_MAP[level][0]:
                     self.exit_tile = tile_data
-                elif tile == 82:
+                elif tile == constants.REWARDS_TILES_MAP[level]:
                     coin = Item(image_x, image_y, 0, item_images[0], False, y, x)
                     self.item_list.append(coin)
                     tile_data[0] = tile_list[constants.BASE_TILES[level]]
-                elif tile == 84:
+                elif tile == constants.POTIONS_TILES_MAP[level]:
                     potion = Item(image_x, image_y, 1, [item_images[1]], False, y, x)
                     self.item_list.append(potion)
                     tile_data[0] = tile_list[constants.BASE_TILES[level]]
-                elif tile == 85:
+                elif tile == constants.CHARACTER_TILE_MAP[level]:
                     # create a character object
                     player = Character(image_x, image_y, 100, mob_animation_list, 0, False, 1)
                     self.player = player
                     tile_data[0] = tile_list[constants.BASE_TILES[level]]
-                # BOSS
-                # elif tile == 17:
-                #     enemy = Character(image_x, image_y, 100, mob_animation_list, 6, True, 2, x, y)
-                #     self.character_list.append(enemy)
-                #     tile_data[0] = tile_list[0]
                 elif tile in constants.ENEMY_TILE_MAP[level].values():
                     enemy_name = list(constants.ENEMY_TILE_MAP[level].keys())[0]
                     enemy = Character(image_x, image_y, 100, mob_animation_list, constants.LEVEL_CHARACTERS[level].index(enemy_name), False, 1, y, x)

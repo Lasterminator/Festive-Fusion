@@ -22,7 +22,7 @@ pygame.display.set_caption("Halloween Game")
 clock = pygame.time.Clock()
 
 # define game variables
-level = 3
+level = 2
 current_asset_path = constants.LEVEL_ASSETS[level]
 start_game = False
 pause_game = False
@@ -49,6 +49,8 @@ font = pygame.font.Font("assets/fonts/AtariClassic.ttf", 20)
 # helper function to scale the character image
 def scale_image(image, scale):
     return pygame.transform.scale(image, (image.get_width() * scale, image.get_height() * scale))
+
+
 
 # load music and sounds
 pygame.mixer.music.load('assets/audio/music.wav')
@@ -85,9 +87,12 @@ img = scale_image(img, constants.ITEM_SCALE)
 coin_image.append(img)
 
 coin_collect_image = []
-img = pygame.image.load(f'{current_asset_path}/images/items/{constants.LEVEL_ITEMS[level][0]}.png').convert_alpha()
-img = scale_image(img, constants.ITEM_COLLECT_SCALE)
-coin_collect_image.append(img)
+def load_coin_collect_image(level):
+    img = pygame.image.load(f'{current_asset_path}/images/items/{constants.LEVEL_ITEMS[level][0]}.png').convert_alpha()
+    img = scale_image(img, constants.ITEM_COLLECT_SCALE)
+    coin_collect_image.append(img)
+
+load_coin_collect_image(level)
 
 # load health potion image
 red_potion = scale_image(pygame.image.load(f'{current_asset_path}/images/items/{constants.LEVEL_ITEMS[level][1]}.png').convert_alpha(), constants.POTION_SCALE)
@@ -114,19 +119,23 @@ for x in range(tile_count):
 
 # load the character image
 mob_animation_list = []
-mob_types = constants.LEVEL_CHARACTERS[level]
-animation_types = constants.ANIMATION_TYPES
+def load_mob_animation_list(level):
 
-for mob in mob_types:
-    animation_list = []
-    for animation in animation_types:
-        temp_list = []
-        for i in range(4):
-            img = pygame.image.load(f'{current_asset_path}/images/characters/{mob}/{animation}/{i}.png').convert_alpha()
-            img = scale_image(img, constants.CHARACTER_SCALE)
-            temp_list.append(img)
-        animation_list.append(temp_list)
-    mob_animation_list.append(animation_list)
+    mob_types = constants.LEVEL_CHARACTERS[level]
+    animation_types = constants.ANIMATION_TYPES
+
+    for mob in mob_types:
+        animation_list = []
+        for animation in animation_types:
+            temp_list = []
+            for i in range(4):
+                img = pygame.image.load(f'{current_asset_path}/images/characters/{mob}/{animation}/{i}.png').convert_alpha()
+                img = scale_image(img, constants.CHARACTER_SCALE)
+                temp_list.append(img)
+            animation_list.append(temp_list)
+        mob_animation_list.append(animation_list)
+
+load_mob_animation_list(level)
 
 # function for text output on screen
 def draw_text(text, font, text_color, x, y):
@@ -554,6 +563,21 @@ while run:
                             tile_image = pygame.transform.scale(tile_image, (constants.TILE_SIZE, constants.TILE_SIZE))
                             tile_list.append(tile_image)
 
+                        mob_animation_list = []
+                        load_mob_animation_list(level)
+
+                        # Reload coin images for current level
+                        coin_image = []
+                        img = pygame.image.load(f'{current_asset_path}/images/items/{constants.LEVEL_ITEMS[level][0]}.png').convert_alpha()
+                        img = scale_image(img, constants.ITEM_SCALE)
+                        coin_image.append(img)
+                        
+                        # Reload item images
+                        item_images = []
+                        item_images.append(coin_image)
+                        if len(constants.LEVEL_ITEMS[level]) > 1:
+                            red_potion = scale_image(pygame.image.load(f'{current_asset_path}/images/items/{constants.LEVEL_ITEMS[level][1]}.png').convert_alpha(), constants.POTION_SCALE)
+                            item_images.append(red_potion)
                         world = World()
                         world.process_data(world_data, tile_list, item_images, mob_animation_list, level)
 
@@ -565,6 +589,8 @@ while run:
 
                         player = world.player
                         enemy_list = world.character_list
+                        coin_collect_image = []
+                        load_coin_collect_image(level)
                         score_coin = Item(constants.SCREEN_WIDTH - 81, 23, 0, coin_collect_image, True)
                         item_group.add(score_coin)
                         #add the items from the level data, also handles removing items from previous level
