@@ -423,7 +423,8 @@ while run:
                             for x, row in enumerate(reader):
                                 for y, tile in enumerate(row):
                                     world_data[x][y] = int(tile)
-                            
+                        mob_animation_list = []
+                        load_mob_animation_list(level)
                         world = World()
                         world.process_data(world_data, tile_list, item_images, mob_animation_list, level)
                         
@@ -440,6 +441,7 @@ while run:
                         player.score = game_state[f'level{level}_player_score']
                         
                         # Reset and recreate item groups
+                        load_coin_collect_image(level)
                         item_group.empty()
                         score_coin = Item(constants.SCREEN_WIDTH - 81, 23, 0, coin_collect_image, True)
                         item_group.add(score_coin)
