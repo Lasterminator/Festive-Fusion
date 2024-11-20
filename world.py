@@ -6,15 +6,36 @@ from items import Item
 import constants
 
 class World():
-    def __init__(self):
-        self.map_tiles = []
+    _instance = None
+    
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+            cls._instance.initialize()
+        return cls._instance
+    
+    def initialize(self):
+        # Initialize all the attributes that were previously in __init__
         self.obstacle_tiles = []
-        self.exit_tile = None
         self.item_list = []
+        self.exit_tile = None
         self.player = None
         self.character_list = []
+        self.level_length = 0
+        self.map_tiles = []
+        
+    def reset(self):
+        """Reset the world state for new level/game"""
+        self.obstacle_tiles.clear()
+        self.item_list.clear()
+        self.exit_tile = None
+        self.player = None
+        self.character_list.clear()
+        self.level_length = 0
+        self.map_tiles.clear()
 
     def process_data(self, data, tile_list, item_images, mob_animation_list, level):
+        self.reset()
         self.level_length = len(data)
         # iterate through each value in the data file
         for y, row in enumerate(data):
@@ -61,4 +82,3 @@ class World():
     def draw(self, surface):
         for tile in self.map_tiles:
             surface.blit(tile[0], tile[1])
-        
