@@ -27,6 +27,7 @@ current_asset_path = constants.LEVEL_ASSETS[level]
 start_game = False
 pause_game = False
 start_intro = False
+show_controls = False
 screen_scroll = [0, 0]
 player_score = 0
 previous_player_score = 0
@@ -134,9 +135,9 @@ item_images.append(coin_image)
 item_images.append(red_potion)
 
 # load weapon image
-weapon_image = scale_image(pygame.image.load('assets/images/weapons/bow.png').convert_alpha(), constants.BOW_SCALE)
-arrow_image = scale_image(pygame.image.load('assets/images/weapons/arrow.png').convert_alpha(), constants.BOW_SCALE)
-fireball_image = scale_image(pygame.image.load('assets/images/weapons/arrow.png').convert_alpha(), constants.BOW_SCALE)
+weapon_image = scale_image(pygame.image.load('assets/images/weapons/gun.png').convert_alpha(), constants.BOW_SCALE)
+flare_image = scale_image(pygame.image.load('assets/images/weapons/flare.png').convert_alpha(), constants.BOW_SCALE)
+fireball_image = scale_image(pygame.image.load('assets/images/weapons/flare.png').convert_alpha(), constants.BOW_SCALE)
 
 # load tile_map images based on current level
 tile_list = []
@@ -277,7 +278,7 @@ player = world.player
 
 
 # create a weapon object
-bow = Weapon(weapon_image, arrow_image)
+bow = Weapon(weapon_image, flare_image)
 
 # extract  enemies from world data
 enemy_list = world.character_list
@@ -350,6 +351,43 @@ def load_game_state(caretaker):
         state = memento.get_state()
         return state
     return None
+    
+
+def draw_controls_popup(screen):
+    # Draw semi-transparent background
+    s = pygame.Surface((constants.SCREEN_WIDTH, constants.SCREEN_HEIGHT))
+    s.set_alpha(128)
+    s.fill((0, 0, 0))
+    screen.blit(s, (0, 0))
+    
+    # Draw popup box
+    popup_width = 400
+    popup_height = 320
+    popup_x = (constants.SCREEN_WIDTH - popup_width) // 2
+    popup_y = (constants.SCREEN_HEIGHT - popup_height) // 2
+    
+    pygame.draw.rect(screen, constants.PANEL, (popup_x, popup_y, popup_width, popup_height))
+    pygame.draw.rect(screen, constants.WHITE, (popup_x, popup_y, popup_width, popup_height), 2)
+    
+    # Draw title
+    draw_text("Game Controls", font, constants.WHITE, popup_x + 50, popup_y + 20)
+    
+    # Draw control instructions
+    controls = [
+        "W - Move Up",
+        "S - Move Down",
+        "A - Move Left",
+        "D - Move Right",
+        "Click - Fire",
+        "ESC - Pause Game"
+    ]
+    
+    for i, control in enumerate(controls):
+        draw_text(control, font, constants.WHITE, popup_x + 50, popup_y + 80 + (i * 30))
+    
+    # Draw continue text
+    draw_text("Click anywhere", font, constants.YELLOW, popup_x + 50, popup_y + 260)
+    draw_text(" to continue", font, constants.YELLOW, popup_x + 50, popup_y + 280)
 
 # main game loop
 run = True
@@ -376,6 +414,16 @@ while run:
         scoreboard.draw_scoreboard(screen)
         if exit_button.draw(screen):
             run = False
+    elif show_controls:
+        draw_controls_popup(screen)
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                run = False
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                show_controls = False
+                start_game = True
+                start_intro = True
+
     else:
         if start_game == False:
             screen.fill(constants.MENU_BGCOLOR)
@@ -389,6 +437,7 @@ while run:
                 if start_button.draw(screen):
                     start_game = True
                     start_intro = True
+                    show_controls = True
                 if leaderboard_button.draw(screen):
                     show_leaderboard = True
                 if exit_button.draw(screen):
@@ -549,9 +598,7 @@ while run:
                     # update 
                     world.update(screen_scroll)
                     for enemy in enemy_list:
-                        fireball = enemy.ai(player, world.obstacle_tiles, screen_scroll, fireball_image)
-                        if fireball:
-                            fireball_group.add(fireball)
+                        enemy.ai(player, world.obstacle_tiles, screen_scroll)
                         if enemy.alive:
                             isEnemyDead = enemy.update(level)
                             if isEnemyDead:
@@ -582,8 +629,6 @@ while run:
                 bow.draw(screen)
                 for arrow in arrow_group:
                     arrow.draw(screen)
-                for fireball in fireball_group:
-                    fireball.draw(screen)
                 damage_text_group.draw(screen)
                 item_group.draw(screen)
                 draw_info()
