@@ -301,14 +301,14 @@ intro_fade = ScreenFade(1, constants.BLACK, 4)
 death_fade = ScreenFade(2, constants.PINK, 4)
 
 # create button
-start_button = Button(constants.SCREEN_WIDTH // 2 - 110, constants.SCREEN_HEIGHT // 2 - 150, start_img)
+start_button = Button(constants.SCREEN_WIDTH // 2 - 70, constants.SCREEN_HEIGHT // 2 - 100, start_img)
 restart_button = Button(constants.SCREEN_WIDTH // 2 - 110, constants.SCREEN_HEIGHT // 2 - 50, restart_img)
-save_button = Button(constants.SCREEN_WIDTH // 2 - 110, constants.SCREEN_HEIGHT // 2 - 50, save_img)
-load_button = Button(constants.SCREEN_WIDTH // 2 - 110, constants.SCREEN_HEIGHT // 2 - 50, load_img)
-leaderboard_button = Button(constants.SCREEN_WIDTH // 2 - 110, constants.SCREEN_HEIGHT // 2 - 250, leaderboard_img)
-back_button = Button(constants.SCREEN_WIDTH // 2 - 110, constants.SCREEN_HEIGHT // 2 + 150, back_img)
-exit_button = Button(constants.SCREEN_WIDTH // 2 - 110, constants.SCREEN_HEIGHT // 2 + 50, exit_img)
-resume_button = Button(constants.SCREEN_WIDTH // 2 - 110, constants.SCREEN_HEIGHT // 2 - 150, resume_img)
+save_button = Button(constants.SCREEN_WIDTH // 2 - 70, constants.SCREEN_HEIGHT // 2, save_img)
+load_button = Button(constants.SCREEN_WIDTH // 2 - 70, constants.SCREEN_HEIGHT // 2, load_img)
+leaderboard_button = Button(constants.SCREEN_WIDTH // 2 - 150, constants.SCREEN_HEIGHT // 2 - 200, leaderboard_img)
+back_button = Button(constants.SCREEN_WIDTH // 2 - 80, constants.SCREEN_HEIGHT // 2 + 200, back_img)
+exit_button = Button(constants.SCREEN_WIDTH // 2 - 70, constants.SCREEN_HEIGHT // 2 + 100, exit_img)
+resume_button = Button(constants.SCREEN_WIDTH // 2 - 75, constants.SCREEN_HEIGHT // 2 - 100,resume_img)
 
 
 def save_game_state(caretaker):
