@@ -4,7 +4,7 @@ import csv
 import constants
 from character import Character
 from weapon import Weapon
-from items import Item
+from items import ItemFactory
 from world import World
 from button import Button
 from scoreboard import Scoreboard
@@ -261,7 +261,7 @@ arrow_group = pygame.sprite.Group()
 item_group = pygame.sprite.Group()
 fireball_group = pygame.sprite.Group()
 
-score_coin = Item(constants.SCREEN_WIDTH - 81, 23, 0, coin_collect_image, True)
+score_coin = ItemFactory.create_item(0, constants.SCREEN_WIDTH - 81, 23, coin_collect_image, True)
 item_group.add(score_coin)
 
 #add the items from the level data
@@ -445,7 +445,7 @@ while run:
                         # Reset and recreate item groups
                         load_coin_collect_image(level)
                         item_group.empty()
-                        score_coin = Item(constants.SCREEN_WIDTH - 81, 23, 0, coin_collect_image, True)
+                        score_coin = score_coin = ItemFactory.create_item(0, constants.SCREEN_WIDTH - 81, 23, coin_collect_image, True)
                         item_group.add(score_coin)
 
                         # Get collected items from saved game
@@ -614,7 +614,7 @@ while run:
                         enemy_list = world.character_list
                         coin_collect_image = []
                         load_coin_collect_image(level)
-                        score_coin = Item(constants.SCREEN_WIDTH - 81, 23, 0, coin_collect_image, True)
+                        score_coin = ItemFactory.create_item(0, constants.SCREEN_WIDTH - 81, 23, coin_collect_image, True)
                         item_group.add(score_coin)
                         #add the items from the level data, also handles removing items from previous level
                         for item in world.item_list:
@@ -648,7 +648,7 @@ while run:
 
                             player = world.player
                             enemy_list = world.character_list
-                            score_coin = Item(constants.SCREEN_WIDTH - 81, 23, 0, coin_collect_image, True)
+                            score_coin = ItemFactory.create_item(0, constants.SCREEN_WIDTH - 81, 23, coin_collect_image, True)
                             item_group.add(score_coin)
                             #add the items from the level data, also handles removing items from previous level
                             for item in world.item_list:

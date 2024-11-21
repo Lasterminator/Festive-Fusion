@@ -2,7 +2,7 @@ import pygame
 import math 
 import random
 from character import Character
-from items import Item
+from items import ItemFactory
 import constants
 
 class World():
@@ -55,12 +55,28 @@ class World():
                     self.exit_tile = tile_data
                 elif tile == constants.REWARDS_TILES_MAP[level]:
                     if (y, x) not in self.collected_items:
-                        coin = Item(image_x, image_y, 0, item_images[0], False, y, x)
+                        coin = ItemFactory.create_item(
+                        0,  # item_type for coin
+                        image_x, 
+                        image_y, 
+                        item_images[0],  # animation list
+                        False,  # dummy_coin
+                        y,  # CSV_X
+                        x   # CSV_Y
+                    )
                         self.item_list.append(coin)
                     tile_data[0] = tile_list[constants.BASE_TILES[level]]
                 elif tile == constants.POTIONS_TILES_MAP[level]:
                     if (y, x) not in self.collected_items:
-                        potion = Item(image_x, image_y, 1, [item_images[1]], False, y, x)
+                        potion = ItemFactory.create_item(
+                        1,  # item_type for potion
+                        image_x, 
+                        image_y, 
+                        [item_images[1]],  # animation list
+                        False,  # dummy_coin
+                        y,  # CSV_X
+                        x   # CSV_Y
+                    )
                         self.item_list.append(potion)
                     tile_data[0] = tile_list[constants.BASE_TILES[level]]
                 elif tile == constants.CHARACTER_TILE_MAP[level]:
