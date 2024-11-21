@@ -9,7 +9,7 @@ from world import World
 from button import Button
 from scoreboard import Scoreboard
 from state import GameCaretaker, GameMemento
-
+import json
 mixer.init()
 # initialize pygame
 pygame.init() 
@@ -284,22 +284,24 @@ resume_button = Button(constants.SCREEN_WIDTH // 2 - 110, constants.SCREEN_HEIGH
 
 
 def save_game_state(caretaker):
+    with open('save_game.json', 'r') as f:
+        state = json.load(f)
 
     level_data = {
         'level1': {
             'player_score': player.score if level == 1 else 0,
-            'collected_items': list(world.collected_items) if level == 1 else [],
-            'killed_enemies': [(enemy.CSV_X, enemy.CSV_Y) for enemy in world.character_list if not enemy.alive] if level == 1 else []
+            'collected_items': state['level_data']['level1']['collected_items'] + list(world.collected_items) if level == 1 else [],
+            'killed_enemies': state['level_data']['level1']['killed_enemies'] + [(enemy.CSV_X, enemy.CSV_Y) for enemy in world.character_list if not enemy.alive] if level == 1 else []
         },
         'level2': {
             'player_score': player.score if level == 2 else 0,
-            'collected_items': list(world.collected_items) if level == 2 else [],
-            'killed_enemies': [(enemy.CSV_X, enemy.CSV_Y) for enemy in world.character_list if not enemy.alive] if level == 2 else []
+            'collected_items': state['level_data']['level2']['collected_items'] + list(world.collected_items) if level == 2 else [],
+            'killed_enemies': state['level_data']['level2']['killed_enemies'] + [(enemy.CSV_X, enemy.CSV_Y) for enemy in world.character_list if not enemy.alive] if level == 2 else []
         },
         'level3': {
             'player_score': player.score if level == 3 else 0,
-            'collected_items': list(world.collected_items) if level == 3 else [],
-            'killed_enemies': [(enemy.CSV_X, enemy.CSV_Y) for enemy in world.character_list if not enemy.alive] if level == 3 else []
+            'collected_items': state['level_data']['level3']['collected_items'] + list(world.collected_items) if level == 3 else [],
+            'killed_enemies': state['level_data']['level3']['killed_enemies'] + [(enemy.CSV_X, enemy.CSV_Y) for enemy in world.character_list if not enemy.alive] if level == 3 else []
         }
     }
 
@@ -367,6 +369,7 @@ while run:
                     game_state = load_game_state(game_caretaker)
                     print(game_state)
                     if game_state:
+                        player_score = game_state['player_score']
                         level = game_state['level']
                         start_game = True
                         start_intro = True
@@ -441,7 +444,7 @@ while run:
 
                         player = world.player
                         player.score = game_state['level_data'][f'level{level}']['player_score']
-                        
+                        previous_player_score = player.score
                         # Reset and recreate item groups
                         load_coin_collect_image(level)
                         item_group.empty()
@@ -632,6 +635,9 @@ while run:
                         if restart_button.draw(screen):
                             death_fade.fade_counter = 0
                             start_intro = True
+                            player_score = 0
+                            previous_player_score = 0
+                            item_group.empty()
                             world_data = reset_level()
                             #load level data and create world
                             with open(f'levels/level{level}_data.csv', newline='') as csvfile:
@@ -639,13 +645,26 @@ while run:
                                 for x, row in enumerate(reader):
                                     for y, tile in enumerate(row):
                                         world_data[x][y] = int(tile)
+
+                            # reload tile list for new level
+                            tile_list = []
+                            current_asset_path = constants.LEVEL_ASSETS[level]
+                            tile_count = constants.TILE_TYPES[level]
+
+                            for x in range(tile_count):
+                                tile_image = pygame.image.load(f'{current_asset_path}/images/tiles/{x}.png').convert_alpha()
+                                tile_image = pygame.transform.scale(tile_image, (constants.TILE_SIZE, constants.TILE_SIZE))
+                                tile_list.append(tile_image)
+
+                            # Reload item images
+                            item_images = []
+                            item_images.append(coin_image)
+                            if len(constants.LEVEL_ITEMS[level]) > 1:
+                                red_potion = scale_image(pygame.image.load(f'{current_asset_path}/images/items/{constants.LEVEL_ITEMS[level][1]}.png').convert_alpha(), constants.POTION_SCALE)
+                                item_images.append(red_potion)
                             world = World()
                             world.process_data(world_data, tile_list, item_images, mob_animation_list, level)
-
-                            # retain score after death
-                            temp_score = player.score
-                            player.score = temp_score
-
+                            
                             player = world.player
                             enemy_list = world.character_list
                             score_coin = ItemFactory.create_item(0, constants.SCREEN_WIDTH - 81, 23, coin_collect_image, True)

@@ -34,6 +34,7 @@ class World():
         self.character_list.clear()
         self.level_length = 0
         self.map_tiles.clear()
+        self.collected_items.clear()
         # Don't clear collected_items here as we want to persist them
 
     def process_data(self, data, tile_list, item_images, mob_animation_list, level):
@@ -56,14 +57,14 @@ class World():
                 elif tile == constants.REWARDS_TILES_MAP[level]:
                     if (y, x) not in self.collected_items:
                         coin = ItemFactory.create_item(
-                        0,  # item_type for coin
-                        image_x, 
-                        image_y, 
-                        item_images[0],  # animation list
-                        False,  # dummy_coin
-                        y,  # CSV_X
-                        x   # CSV_Y
-                    )
+                            0,  # item_type for coin
+                            image_x, 
+                            image_y, 
+                            item_images[0],  # animation list
+                            False,  # dummy_coin
+                            y,  # CSV_X
+                            x   # CSV_Y
+                        )
                         self.item_list.append(coin)
                     tile_data[0] = tile_list[constants.BASE_TILES[level]]
                 elif tile == constants.POTIONS_TILES_MAP[level]:

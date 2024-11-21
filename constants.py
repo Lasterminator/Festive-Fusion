@@ -10,10 +10,10 @@ ATTACK_RANGE = 60
 FPS = 60
 
 # speed
-CHARACTER_SPEED = 30
+CHARACTER_SPEED = 15
 ARROW_SPEED = 10
 FIREBALL_SPEED = 4
-ENEMY_SPEED  = 4
+ENEMY_SPEED  = 5
 
 # Scale
 SCALE = 3
@@ -59,6 +59,7 @@ AUDIO = {
     'enemy_killed': 'audio/enemy_killed.mp3',
     'item_collected': 'audio/item_collected.mp3'
 }
+
 ENEMY_TILE_MAP = {
     1: {
     'turkey': 83,

@@ -3,7 +3,7 @@ import constants
 from abc import ABC, abstractmethod
 
 class Item(pygame.sprite.Sprite, ABC):  
-    def __init__(self, x, y, animation_list, dummy_coin=False, CSV_X=0, CSV_Y=0):
+    def __init__(self, x, y, animation_list, dummy_coin=False, CSV_X=0, CSV_Y=0, item_type=0):
         pygame.sprite.Sprite.__init__(self)
         self.animation_list = animation_list
         self.frame_index = 0
@@ -14,6 +14,7 @@ class Item(pygame.sprite.Sprite, ABC):
         self.dummy_coin = dummy_coin
         self.CSV_X = CSV_X
         self.CSV_Y = CSV_Y
+        self.item_type = item_type
 
     @abstractmethod
     def collect(self, player, player_score, sound_fx):
@@ -125,8 +126,8 @@ class ItemFactory:
     @staticmethod
     def create_item(item_type, x, y, animation_list, dummy_coin=False, CSV_X=0, CSV_Y=0):
         if item_type == 0:  # Coin
-            return Coin(x, y, animation_list, dummy_coin, CSV_X, CSV_Y)
+            return Coin(x, y, animation_list, dummy_coin, CSV_X, CSV_Y, item_type)
         elif item_type == 1:  # Health Potion
-            return HealthPotion(x, y, animation_list, dummy_coin, CSV_X, CSV_Y)
+            return HealthPotion(x, y, animation_list, dummy_coin, CSV_X, CSV_Y, item_type)
         else:
             raise ValueError(f"Unknown item type: {item_type}")
