@@ -22,7 +22,7 @@ pygame.display.set_caption("Halloween Game")
 clock = pygame.time.Clock()
 
 # define game variables
-level = 2
+level = 1
 current_asset_path = constants.LEVEL_ASSETS[level]
 start_game = False
 pause_game = False
