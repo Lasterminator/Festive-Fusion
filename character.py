@@ -160,13 +160,17 @@ class Character:
         return fireball
 
     # update the character's animation
-    def update(self):
+    def update(self, level = None):
         isEnemy = self.character_type != 0
         isEnemyDead = False
 
         # check if the character is alive
         if self.health <= 0:
             self.health = 0
+            if isEnemy and level:
+                hit_fx = pygame.mixer.Sound(f'assets/level{level}/audio/enemy_killed.mp3')
+                hit_fx.set_volume(0.5)
+                hit_fx.play()
             # if self.alive:  # Only add to killed list once when enemy dies
             #     if isEnemy:  # Don't track hero's death
             #         with open('tmp_save.txt', 'r') as f:

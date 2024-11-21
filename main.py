@@ -56,17 +56,46 @@ def scale_image(image, scale):
 
 
 # load music and sounds
-pygame.mixer.music.load('assets/audio/music.wav')
-pygame.mixer.music.set_volume(0.3)
-# pygame.mixer.music.play(-1, 0.0, 5000)
+# pygame.mixer.music.load('assets/audio/music.wav')
+# pygame.mixer.music.set_volume(0.3)
+try:
+    pygame.mixer.music.load('assets/level1/audio/music.mp3')
+    pygame.mixer.music.set_volume(0.2)
+    pygame.mixer.music.play(-1)
+except:
+    print("Error loading background music")
+# # pygame.mixer.music.play(-1, 0.0, 5000)
 shot_fx = pygame.mixer.Sound('assets/audio/arrow_shot.mp3')
 shot_fx.set_volume(0.5)
-hit_fx = pygame.mixer.Sound('assets/audio/arrow_hit.wav')
+hit_fx = pygame.mixer.Sound('assets/level1/audio/enemy_killed.mp3')
 hit_fx.set_volume(0.5)
 coin_fx = pygame.mixer.Sound('assets/audio/coin.wav')
 coin_fx.set_volume(0.5)
 heal_fx = pygame.mixer.Sound('assets/audio/heal.wav')
 heal_fx.set_volume(0.5)
+# shot_fx = None
+# hit_fx = None
+# coin_fx = None
+# heal_fx = None
+
+def load_audio(level):
+    try:
+        pygame.mixer.music.load(f'assets/level{level}/audio/music.mp3')
+        pygame.mixer.music.set_volume(0.2)
+        pygame.mixer.music.play(-1)
+        shot_fx = pygame.mixer.Sound(f'assets/level{level}/audio/arrow_shot.mp3')
+        shot_fx.set_volume(0.5)
+        hit_fx = pygame.mixer.Sound(f'assets/level{level}/audio/enemy_killed.mp3')
+        hit_fx.set_volume(0.5)
+        coin_fx = pygame.mixer.Sound('assets/audio/coin.wav')
+        coin_fx.set_volume(0.5)
+        heal_fx = pygame.mixer.Sound('assets/audio/heal.wav')
+        heal_fx.set_volume(0.5)
+
+    except:
+        print(f"Error loading background music for level {level}")
+load_audio(level)
+    
 
 # load button images
 start_img = scale_image(pygame.image.load('assets/images/buttons/button_start.png').convert_alpha(), constants.BUTTON_SCALE)
@@ -123,7 +152,6 @@ for x in range(tile_count):
 # load the character image
 mob_animation_list = []
 def load_mob_animation_list(level):
-
     mob_types = constants.LEVEL_CHARACTERS[level]
     animation_types = constants.ANIMATION_TYPES
 
@@ -408,6 +436,7 @@ while run:
                                     world_data[x][y] = int(tile)
                         mob_animation_list = []
                         load_mob_animation_list(level)
+                        load_audio(level)
                         world = World()
                         world.process_data(world_data, tile_list, item_images, mob_animation_list, level)
                         
@@ -524,7 +553,7 @@ while run:
                         if fireball:
                             fireball_group.add(fireball)
                         if enemy.alive:
-                            isEnemyDead = enemy.update()
+                            isEnemyDead = enemy.update(level)
                             if isEnemyDead:
                                 player_score += constants.REWARD_MAP['enemy']
 
@@ -538,7 +567,6 @@ while run:
                         if damage:
                             damage_text = DamageText(damage_pos.centerx, damage_pos.y, str(damage), constants.RED)
                             damage_text_group.add(damage_text)
-                            hit_fx.play()
                     damage_text_group.update()
                     fireball_group.update(screen_scroll, player)
                     item_group.update(screen_scroll, player, coin_fx, heal_fx, level, player_score)
@@ -591,6 +619,7 @@ while run:
 
                         mob_animation_list = []
                         load_mob_animation_list(level)
+                        load_audio(level)
 
                         # Reload coin images for current level
                         coin_image = []
@@ -702,5 +731,4 @@ while run:
                 moving_down = False
 
     pygame.display.update()
-
 pygame.quit() 
