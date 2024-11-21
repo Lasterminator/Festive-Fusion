@@ -1,6 +1,10 @@
 {
     "scores": [
         {
+            "name": "a",
+            "score": 740
+        },
+        {
             "name": "what",
             "score": 660
         },

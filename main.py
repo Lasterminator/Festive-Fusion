@@ -136,7 +136,7 @@ item_images.append(red_potion)
 # load weapon image
 weapon_image = scale_image(pygame.image.load('assets/images/weapons/bow.png').convert_alpha(), constants.BOW_SCALE)
 arrow_image = scale_image(pygame.image.load('assets/images/weapons/arrow.png').convert_alpha(), constants.BOW_SCALE)
-fireball_image = scale_image(pygame.image.load('assets/images/weapons/fireball.png').convert_alpha(), constants.BOW_SCALE)
+fireball_image = scale_image(pygame.image.load('assets/images/weapons/arrow.png').convert_alpha(), constants.BOW_SCALE)
 
 # load tile_map images based on current level
 tile_list = []

@@ -22,8 +22,8 @@ class Scoreboard:
         scores.append({"name": name, "score": score})
         # Sort scores by highest first
         scores.sort(key=lambda x: x['score'], reverse=True)
-        # Keep only top 10 scores
-        scores = scores[:10]
+        # Keep only top 5 scores
+        scores = scores[:5]
         
         with open('scoreboard.json', 'w') as f:
             json.dump({"scores": scores}, f, indent=4)
