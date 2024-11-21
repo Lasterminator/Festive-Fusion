@@ -167,23 +167,20 @@ class Character:
         # check if the character is alive
         if self.health <= 0:
             self.health = 0
-            if self.alive:  # Only add to killed list once when enemy dies
-                if isEnemy:  # Don't track hero's death
-                    with open('tmp_save.txt', 'r') as f:
-                        existing_items = []
-                        killed_enemies = []
-                        for line in f:
-                            if line.startswith('COLLECTED_ITEMS:'):
-                                existing_items = eval(line.split(':')[1])
-                            elif line.startswith('KILLED_ENEMIES:'):
-                                killed_enemies = eval(line.split(':')[1])
+            # if self.alive:  # Only add to killed list once when enemy dies
+            #     if isEnemy:  # Don't track hero's death
+            #         with open('tmp_save.txt', 'r') as f:
+            #             existing_items = []
+            #             killed_enemies = []
+            #             for line in f:
+            #                 if line.startswith('COLLECTED_ITEMS:'):
+            #                     existing_items = eval(line.split(':')[1])
+            #                 elif line.startswith('KILLED_ENEMIES:'):
+            #                     killed_enemies = eval(line.split(':')[1])
                     
-                    if (self.CSV_X, self.CSV_Y) not in killed_enemies:
-                        killed_enemies.append((self.CSV_X, self.CSV_Y))
+            #         if (self.CSV_X, self.CSV_Y) not in killed_enemies:
+            #             killed_enemies.append((self.CSV_X, self.CSV_Y))
                     
-                    with open('tmp_save.txt', 'w') as f:
-                        f.write(f"COLLECTED_ITEMS:{existing_items}\n")
-                        f.write(f"KILLED_ENEMIES:{killed_enemies}\n")
             self.alive = False
             isEnemyDead = True
 

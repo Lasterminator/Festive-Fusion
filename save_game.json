@@ -1,0 +1,52 @@
+{
+    "level": 2,
+    "player_score": 650,
+    "player_health": 90,
+    "level_data": {
+        "level1": {
+            "player_score": 0,
+            "collected_items": [],
+            "killed_enemies": []
+        },
+        "level2": {
+            "player_score": 2,
+            "collected_items": [
+                [
+                    127,
+                    126
+                ],
+                [
+                    103,
+                    143
+                ],
+                [
+                    11,
+                    22
+                ],
+                [
+                    9,
+                    30
+                ],
+                [
+                    1,
+                    22
+                ]
+            ],
+            "killed_enemies": [
+                [
+                    5,
+                    16
+                ],
+                [
+                    26,
+                    14
+                ]
+            ]
+        },
+        "level3": {
+            "player_score": 0,
+            "collected_items": [],
+            "killed_enemies": []
+        }
+    }
+}

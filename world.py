@@ -23,6 +23,7 @@ class World():
         self.character_list = []
         self.level_length = 0
         self.map_tiles = []
+        self.collected_items = set()
         
     def reset(self):
         """Reset the world state for new level/game"""
@@ -33,6 +34,7 @@ class World():
         self.character_list.clear()
         self.level_length = 0
         self.map_tiles.clear()
+        # Don't clear collected_items here as we want to persist them
 
     def process_data(self, data, tile_list, item_images, mob_animation_list, level):
         self.reset()
@@ -52,12 +54,14 @@ class World():
                 elif tile == constants.EXIT_TILE_MAP[level][0]:
                     self.exit_tile = tile_data
                 elif tile == constants.REWARDS_TILES_MAP[level]:
-                    coin = Item(image_x, image_y, 0, item_images[0], False, y, x)
-                    self.item_list.append(coin)
+                    if (y, x) not in self.collected_items:
+                        coin = Item(image_x, image_y, 0, item_images[0], False, y, x)
+                        self.item_list.append(coin)
                     tile_data[0] = tile_list[constants.BASE_TILES[level]]
                 elif tile == constants.POTIONS_TILES_MAP[level]:
-                    potion = Item(image_x, image_y, 1, [item_images[1]], False, y, x)
-                    self.item_list.append(potion)
+                    if (y, x) not in self.collected_items:
+                        potion = Item(image_x, image_y, 1, [item_images[1]], False, y, x)
+                        self.item_list.append(potion)
                     tile_data[0] = tile_list[constants.BASE_TILES[level]]
                 elif tile == constants.CHARACTER_TILE_MAP[level]:
                     # create a character object

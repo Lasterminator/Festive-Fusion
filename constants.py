@@ -54,6 +54,11 @@ LEVEL_ITEMS = {
     3: ['gift', 'ring']
 }
 
+AUDIO = {
+    'background': 'audio/music.mp3',
+    'enemy_killed': 'audio/enemy_killed.mp3',
+    'item_collected': 'audio/item_collected.mp3'
+}
 ENEMY_TILE_MAP = {
     1: {
     'turkey': 83,

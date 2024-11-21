@@ -8,7 +8,7 @@ from items import Item
 from world import World
 from button import Button
 from scoreboard import Scoreboard
-
+from state import GameCaretaker, GameMemento
 
 mixer.init()
 # initialize pygame
@@ -42,6 +42,9 @@ show_scoreboard = False
 show_input = False
 show_leaderboard = False
 scoreboard = Scoreboard()
+
+#instance of game state
+game_caretaker = GameCaretaker()
 
 #define font
 font = pygame.font.Font("assets/fonts/AtariClassic.ttf", 20)
@@ -280,66 +283,43 @@ exit_button = Button(constants.SCREEN_WIDTH // 2 - 110, constants.SCREEN_HEIGHT 
 resume_button = Button(constants.SCREEN_WIDTH // 2 - 110, constants.SCREEN_HEIGHT // 2 - 150, resume_img)
 
 
-def save_game_state():
-    level1_player_score = 0
-    level2_player_score = 0
-    level3_player_score = 0
-    collected_items = []
-    killed_enemies = []
+def save_game_state(caretaker):
 
-    # Read collected items from temp_save.txt
-    try:
-        with open('tmp_save.txt', 'r') as f:
-            for line in f:
-                key, value = line.strip().split(':')
-                if key == 'COLLECTED_ITEMS':
-                    collected_items = eval(value)
-                elif key == 'KILLED_ENEMIES':
-                    killed_enemies = eval(value)
-    except FileNotFoundError:
-        pass
-
-    # Read existing scores from save file
-    try:
-        with open('save_game.txt', 'r') as f:
-            for line in f:
-                key, value = line.strip().split(':')
-                if key == 'level1_player_score':
-                    level1_player_score = int(value)
-                elif key == 'level2_player_score':
-                    level2_player_score = int(value)
-                elif key == 'level3_player_score':
-                    level3_player_score = int(value)
-    except FileNotFoundError:
-        pass
-
-    game_state = {
-        'level': level,
-        'level1_player_score': player.score if level == 1 else level1_player_score,
-        'level2_player_score': player.score if level == 2 else level2_player_score,
-        'level3_player_score': player.score if level == 3 else level3_player_score,
-        'COLLECTED_ITEMS': collected_items,
-        'KILLED_ENEMIES': killed_enemies
+    level_data = {
+        'level1': {
+            'player_score': player.score if level == 1 else 0,
+            'collected_items': list(world.collected_items) if level == 1 else [],
+            'killed_enemies': [(enemy.CSV_X, enemy.CSV_Y) for enemy in world.character_list if not enemy.alive] if level == 1 else []
+        },
+        'level2': {
+            'player_score': player.score if level == 2 else 0,
+            'collected_items': list(world.collected_items) if level == 2 else [],
+            'killed_enemies': [(enemy.CSV_X, enemy.CSV_Y) for enemy in world.character_list if not enemy.alive] if level == 2 else []
+        },
+        'level3': {
+            'player_score': player.score if level == 3 else 0,
+            'collected_items': list(world.collected_items) if level == 3 else [],
+            'killed_enemies': [(enemy.CSV_X, enemy.CSV_Y) for enemy in world.character_list if not enemy.alive] if level == 3 else []
+        }
     }
 
-    with open('save_game.txt', 'w') as f:
-        for key, value in game_state.items():
-            f.write(f"{key}:{value}\n")
+    
+    memento = GameMemento(
+        level=level,
+        player_score=player_score,
+        player_health=player.health,
+        level_data=level_data
+    )
+    
+    caretaker.backup(memento)
+    caretaker.save_to_file()
 
-def load_game_state():
-    try:
-        game_state = {}
-        with open('save_game.txt', 'r') as f:
-            for line in f:
-                key, value = line.strip().split(':')
-                if key == 'COLLECTED_ITEMS' or key == 'KILLED_ENEMIES':
-                    # Convert string representation of list to actual list
-                    game_state[key] = eval(value)
-                else:
-                    game_state[key] = int(value)
-        return game_state
-    except FileNotFoundError:
-        return None
+def load_game_state(caretaker):
+    memento = caretaker.load_from_file()
+    if memento:
+        state = memento.get_state()
+        return state
+    return None
 
 # main game loop
 run = True
@@ -384,8 +364,8 @@ while run:
                 if exit_button.draw(screen):
                     run = False
                 if load_button.draw(screen):
-                    game_state = load_game_state()
-
+                    game_state = load_game_state(game_caretaker)
+                    print(game_state)
                     if game_state:
                         level = game_state['level']
                         start_game = True
@@ -428,17 +408,39 @@ while run:
                         world = World()
                         world.process_data(world_data, tile_list, item_images, mob_animation_list, level)
                         
+                        # Get collected items from saved game
+                        collected_items = []
+                        if game_state and 'collected_items' in game_state['level_data'][f'level{level}']:
+                            collected_items = game_state['level_data'][f'level{level}']['collected_items']
+                            # Convert collected_items to set of tuples
+                            collected_items_set = set(tuple(item) for item in collected_items)
+                            world.collected_items = collected_items_set
+                            
+                            # Remove collected items from world and don't add them to item_group
+                            for item in world.item_list[:]:  # Create a copy of the list to iterate
+                                if (item.CSV_X, item.CSV_Y) in collected_items_set:
+                                    world.item_list.remove(item)
+                                else:
+                                    item_group.add(item)
+                        else:
+                            # If no saved collected items, add all items from world
+                            for item in world.item_list:
+                                item_group.add(item)
+
                         # Remove killed enemies
-                        if 'KILLED_ENEMIES' in game_state:
+                        if 'killed_enemies' in game_state['level_data'][f'level{level}']:
+                            killed_enemies = game_state['level_data'][f'level{level}']['killed_enemies']
+                            # Convert killed_enemies coordinates to tuples
+                            killed_enemies = [tuple(coords) for coords in killed_enemies]
+                            # Remove enemies that were killed in the saved game
                             for enemy in world.character_list[:]:
-                                enemy_x = enemy.CSV_X
-                                enemy_y = enemy.CSV_Y
-                                if (enemy_x, enemy_y) in game_state['KILLED_ENEMIES']:
+                                if (enemy.CSV_X, enemy.CSV_Y) in killed_enemies:
                                     world.character_list.remove(enemy)
+                            enemy_list = world.character_list
                         enemy_list = world.character_list
 
                         player = world.player
-                        player.score = game_state[f'level{level}_player_score']
+                        player.score = game_state['level_data'][f'level{level}']['player_score']
                         
                         # Reset and recreate item groups
                         load_coin_collect_image(level)
@@ -448,15 +450,34 @@ while run:
 
                         # Get collected items from saved game
                         collected_items = []
-                        if game_state and 'COLLECTED_ITEMS' in game_state:
-                            collected_items = game_state['COLLECTED_ITEMS']
-
-                        # Filter out collected items using CSV indices
-                        for item in world.item_list[:]:  # Create a copy of the list to iterate
-                            if (item.CSV_X, item.CSV_Y) in collected_items:
-                                world.item_list.remove(item)
-                            else:
+                        if game_state and 'collected_items' in game_state['level_data'][f'level{level}']:
+                            collected_items = game_state['level_data'][f'level{level}']['collected_items']
+                            # Convert collected_items to set of tuples
+                            collected_items_set = set(tuple(item) for item in collected_items)
+                            world.collected_items = collected_items_set
+                            
+                            # Remove collected items from world and don't add them to item_group
+                            for item in world.item_list[:]:  # Create a copy of the list to iterate
+                                if (item.CSV_X, item.CSV_Y) in collected_items_set:
+                                    world.item_list.remove(item)
+                                else:
+                                    item_group.add(item)
+                        else:
+                            # If no saved collected items, add all items from world
+                            for item in world.item_list:
                                 item_group.add(item)
+
+                        # Remove killed enemies
+                        if 'killed_enemies' in game_state['level_data'][f'level{level}']:
+                            killed_enemies = game_state['level_data'][f'level{level}']['killed_enemies']
+                            # Convert killed_enemies coordinates to tuples
+                            killed_enemies = [tuple(coords) for coords in killed_enemies]
+                            # Remove enemies that were killed in the saved game
+                            for enemy in world.character_list[:]:
+                                if (enemy.CSV_X, enemy.CSV_Y) in killed_enemies:
+                                    world.character_list.remove(enemy)
+                            enemy_list = world.character_list
+
             if exit_button.draw(screen):
                 run = False
 
@@ -466,7 +487,7 @@ while run:
                 if resume_button.draw(screen):
                     pause_game = False
                 if save_button.draw(screen):
-                    save_game_state()
+                    save_game_state(game_caretaker)
                     pause_game = False
                 if exit_button.draw(screen):
                     run = False
