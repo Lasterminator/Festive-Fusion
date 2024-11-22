@@ -383,9 +383,11 @@ def draw_level_intro(screen, level):
     s.fill((0, 0, 0))
     screen.blit(s, (0, 0))
     
-    # Draw popup box
-    popup_x = 0
-    popup_y = 0
+    # Calculate popup dimensions
+    popup_width = 700
+    popup_height = 500
+    popup_x = (constants.SCREEN_WIDTH - popup_width) // 2
+    popup_y = (constants.SCREEN_HEIGHT - popup_height) // 2
 
 
     
@@ -393,36 +395,51 @@ def draw_level_intro(screen, level):
     # pygame.draw.rect(screen, constants.WHITE, (popup_x, popup_y, popup_width, popup_height), 2)
     
     # Draw title
-    draw_text(f"Level {level}", font, constants.WHITE, popup_x + 200, popup_y + 20)
+    title_text = f"Level {level}"
+    title_surface = font.render(title_text, True, constants.WHITE)
+    title_x = popup_x + (popup_width - title_surface.get_width()) // 2
+    screen.blit(title_surface, (title_x, popup_y + 20))
     
     # Draw story text with wrapping (max width of 700 pixels)
     story_height = draw_wrapped_text(constants.LEVEL_STORY[level], font, constants.WHITE, 
-                                   popup_x + 50, popup_y + 100, 700)
+                                   popup_x + 50, popup_y + 80, popup_width - 100)
     
     # Calculate vertical position for images based on story text height
-    images_y = popup_y + 150 + story_height
+    images_y = popup_y + 100 + story_height
+    image_spacing = popup_width // 3
     # Load and display enemy image
-    enemy_name = constants.LEVEL_CHARACTERS[level][1]  # Get enemy name for current level
+    enemy_name = constants.LEVEL_CHARACTERS[level][1]
     enemy_img = pygame.image.load(f'assets/level{level}/images/characters/{enemy_name}/idle/0.png').convert_alpha()
     enemy_img = scale_image(enemy_img, constants.CHARACTER_SCALE)
-    screen.blit(enemy_img, (popup_x + 50, images_y))
-    draw_text(f"Enemy", font, constants.WHITE, popup_x + 50, images_y + 100)
+    enemy_x = popup_x + (image_spacing - enemy_img.get_width()) // 2
+    screen.blit(enemy_img, (enemy_x, images_y))
+    enemy_text = font.render("Enemy", True, constants.WHITE)
+    enemy_text_x = popup_x + (image_spacing - enemy_text.get_width()) // 2
+    screen.blit(enemy_text, (enemy_text_x, images_y + 100))
     
     # Load and display potion image
     potion_img = pygame.image.load(f'assets/level{level}/images/items/{constants.LEVEL_ITEMS[level][1]}.png').convert_alpha()
     potion_img = scale_image(potion_img, constants.POTION_SCALE)
-    screen.blit(potion_img, (popup_x + 200, images_y))
-    draw_text("Health", font, constants.WHITE, popup_x + 200, images_y + 100)
+    potion_x = popup_x + image_spacing + (image_spacing - potion_img.get_width()) // 2
+    screen.blit(potion_img, (potion_x, images_y))
+    potion_text = font.render("Health", True, constants.WHITE)
+    potion_text_x = popup_x + image_spacing + (image_spacing - potion_text.get_width()) // 2
+    screen.blit(potion_text, (potion_text_x, images_y + 100))
     
     # Load and display collectible image
     collectible_img = pygame.image.load(f'assets/level{level}/images/items/{constants.LEVEL_ITEMS[level][0]}.png').convert_alpha()
     collectible_img = scale_image(collectible_img, constants.ITEM_SCALE)
-    screen.blit(collectible_img, (popup_x + 350, images_y))
-    draw_text("Collectible", font, constants.WHITE, popup_x + 350, images_y + 100)
+    collectible_x = popup_x + (2 * image_spacing) + (image_spacing - collectible_img.get_width()) // 2
+    screen.blit(collectible_img, (collectible_x, images_y))
+    collectible_text = font.render("Collectible", True, constants.WHITE)
+    collectible_text_x = popup_x + (2 * image_spacing) + (image_spacing - collectible_text.get_width()) // 2
+    screen.blit(collectible_text, (collectible_text_x, images_y + 100))
     
-    # Draw continue text
-    draw_text("Click anywhere", font, constants.YELLOW, popup_x + 50, images_y + 150)
-    draw_text(" to continue", font, constants.YELLOW, popup_x + 50, images_y + 170)
+    # Draw centered continue text
+    continue_text = "Click anywhere to continue"
+    continue_surface = font.render(continue_text, True, constants.YELLOW)
+    continue_x = popup_x + (popup_width - continue_surface.get_width()) // 2
+    screen.blit(continue_surface, (continue_x, popup_y + popup_height ))
 
 def draw_controls_popup(screen):
     # Draw semi-transparent background
