@@ -4,9 +4,8 @@ import weapon
 import math
 
 class Character:
-    def __init__(self, x, y, health, mob_animation_list, character_type, boss, size):
+    def __init__(self, x, y, health, mob_animation_list, character_type, size, CSV_X=None, CSV_Y=None):
         self.character_type = character_type
-        self.boss = boss
         self.score = 0
         self.flip = False
         self.animation_list = mob_animation_list[character_type]
@@ -24,6 +23,8 @@ class Character:
         self.image = self.animation_list[self.action][self.frame_index]
         self.rect = pygame.Rect(0, 0, constants.TILE_SIZE * size, constants.TILE_SIZE * size)
         self.rect.center = (x, y)
+        self.CSV_X = CSV_X
+        self.CSV_Y = CSV_Y
         
     
     # move the character
@@ -94,12 +95,11 @@ class Character:
                 self.rect.bottom = (constants.SCREEN_HEIGHT - constants.SCROLL_THRESH)
         return screen_scroll, level_complete
 
-    def ai(self, player, obstacle_tiles, screen_scroll, fireball_image):
+    def ai(self, player, obstacle_tiles, screen_scroll):
         clipped_line = ()
         stun_cooldown = 100
         ai_dx = 0
         ai_dy = 0
-        fireball = None
 
         #reposition mobs based on screen scroll
         self.rect.x += screen_scroll[0]
@@ -135,14 +135,7 @@ class Character:
                     player.health -= 10
                     player.hit = True
                     player.last_hit = pygame.time.get_ticks()
-            
-                # boss enemies shoot fireballs
-                fireball_cooldown = 700
-                if self.boss:
-                    if dist < 500:
-                        if pygame.time.get_ticks() - self.last_attack >= fireball_cooldown:
-                            fireball = weapon.Fireball(fireball_image, self.rect.centerx, self.rect.centery, player.rect.centerx, player.rect.centery)
-                            self.last_attack = pygame.time.get_ticks()
+        
 
             #check if hit
             if self.hit == True:
@@ -155,15 +148,21 @@ class Character:
             if (pygame.time.get_ticks() - self.last_hit > stun_cooldown):
                 self.stunned = False
 
-        return fireball
-
     # update the character's animation
-    def update(self):
+    def update(self, level = None):
+        isEnemy = self.character_type != 0
+        isEnemyDead = False
 
         # check if the character is alive
         if self.health <= 0:
             self.health = 0
+            if isEnemy and level:
+                hit_fx = pygame.mixer.Sound(f'assets/level{level}/audio/enemy_killed.mp3')
+                hit_fx.set_volume(0.5)
+                hit_fx.play()
+                    
             self.alive = False
+            isEnemyDead = True
 
         # timer to reset player taking a hit
         hit_cooldown = 1000
@@ -188,6 +187,8 @@ class Character:
         # check if we have run out of frames
         if self.frame_index >= len(self.animation_list[self.action]):
             self.frame_index = 0
+
+        return isEnemy and isEnemyDead
 
     # update the character's action (walking or running)
     def update_action(self, new_action):

@@ -1,4 +1,2 @@
-# Ignore levels and assets folders
-levels/
-assets/
 __pycache__/
+*.pyc

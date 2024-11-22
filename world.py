@@ -2,19 +2,43 @@ import pygame
 import math 
 import random
 from character import Character
-from items import Item
+from items import ItemFactory
 import constants
 
 class World():
-    def __init__(self):
-        self.map_tiles = []
+    _instance = None
+    
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+            cls._instance.initialize()
+        return cls._instance
+    
+    def initialize(self):
+        # Initialize all the attributes that were previously in __init__
         self.obstacle_tiles = []
-        self.exit_tile = None
         self.item_list = []
+        self.exit_tile = None
         self.player = None
         self.character_list = []
+        self.level_length = 0
+        self.map_tiles = []
+        self.collected_items = set()
+        
+    def reset(self):
+        """Reset the world state for new level/game"""
+        self.obstacle_tiles.clear()
+        self.item_list.clear()
+        self.exit_tile = None
+        self.player = None
+        self.character_list.clear()
+        self.level_length = 0
+        self.map_tiles.clear()
+        self.collected_items.clear()
+        # Don't clear collected_items here as we want to persist them
 
-    def process_data(self, data, tile_list, item_images, mob_animation_list):
+    def process_data(self, data, tile_list, item_images, mob_animation_list, level):
+        self.reset()
         self.level_length = len(data)
         # iterate through each value in the data file
         for y, row in enumerate(data):
@@ -26,31 +50,46 @@ class World():
                 image_rect.center = (image_x, image_y)
                 tile_data = [image, image_rect, image_x, image_y]
 
-                if tile == 7:
+                if tile in constants.OBSTACLE_TILES_MAP[level]:
                     self.obstacle_tiles.append(tile_data)
-                elif tile == 8:
+                elif tile == constants.EXIT_TILE_MAP[level][0]:
                     self.exit_tile = tile_data
-                elif tile == 9:
-                    coin = Item(image_x, image_y, 0, item_images[0])
-                    self.item_list.append(coin)
-                    tile_data[0] = tile_list[0]
-                elif tile == 10:
-                    potion = Item(image_x, image_y, 1, [item_images[1]])
-                    self.item_list.append(potion)
-                    tile_data[0] = tile_list[0]
-                elif tile == 11:
+                elif tile == constants.REWARDS_TILES_MAP[level]:
+                    if (y, x) not in self.collected_items:
+                        coin = ItemFactory.create_item(
+                            0,  # item_type for coin
+                            image_x, 
+                            image_y, 
+                            item_images[0],  # animation list
+                            False,  # dummy_coin
+                            y,  # CSV_X
+                            x   # CSV_Y
+                        )
+                        self.item_list.append(coin)
+                    tile_data[0] = tile_list[constants.BASE_TILES[level]]
+                elif tile == constants.POTIONS_TILES_MAP[level]:
+                    if (y, x) not in self.collected_items:
+                        potion = ItemFactory.create_item(
+                        1,  # item_type for potion
+                        image_x, 
+                        image_y, 
+                        [item_images[1]],  # animation list
+                        False,  # dummy_coin
+                        y,  # CSV_X
+                        x   # CSV_Y
+                    )
+                        self.item_list.append(potion)
+                    tile_data[0] = tile_list[constants.BASE_TILES[level]]
+                elif tile == constants.CHARACTER_TILE_MAP[level]:
                     # create a character object
-                    player = Character(image_x, image_y, 100, mob_animation_list, 0, False, 1)
+                    player = Character(image_x, image_y, 100, mob_animation_list, 0, 1)
                     self.player = player
-                    tile_data[0] = tile_list[0]
-                elif tile >= 12 and tile <= 16:
-                    enemy = Character(image_x, image_y, 100, mob_animation_list, tile - 11, False, 1)
+                    tile_data[0] = tile_list[constants.BASE_TILES[level]]
+                elif tile in constants.ENEMY_TILE_MAP[level].values():
+                    enemy_name = list(constants.ENEMY_TILE_MAP[level].keys())[0]
+                    enemy = Character(image_x, image_y, 100, mob_animation_list, constants.LEVEL_CHARACTERS[level].index(enemy_name), 1, y, x)
                     self.character_list.append(enemy)
-                    tile_data[0] = tile_list[0]
-                elif tile == 17:
-                    enemy = Character(image_x, image_y, 100, mob_animation_list, 6, True, 2)
-                    self.character_list.append(enemy)
-                    tile_data[0] = tile_list[0]
+                    tile_data[0] = tile_list[constants.BASE_TILES[level]]
                 #add to map tiles
                 if tile >= 0:
                     self.map_tiles.append(tile_data)
@@ -64,4 +103,3 @@ class World():
     def draw(self, surface):
         for tile in self.map_tiles:
             surface.blit(tile[0], tile[1])
-        
