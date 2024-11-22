@@ -42,6 +42,7 @@ total_score = 0
 show_scoreboard = False
 show_input = False
 show_leaderboard = False
+show_level_intro = False
 scoreboard = Scoreboard()
 
 #instance of game state
@@ -342,7 +343,86 @@ def load_game_state(caretaker):
         state = memento.get_state()
         return state
     return None
+
+def draw_wrapped_text(text, font, color, x, y, max_width):
+    # Split the text into words
+    words = text.split(' ')
+    lines = []
+    current_line = []
+    current_width = 0
     
+    # Group words into lines that fit within max_width
+    for word in words:
+        word_surface = font.render(word + ' ', True, color)
+        word_width = word_surface.get_width()
+        
+        if current_width + word_width <= max_width:
+            current_line.append(word)
+            current_width += word_width
+        else:
+            lines.append(' '.join(current_line))
+            current_line = [word]
+            current_width = word_width
+    
+    # Add the last line
+    if current_line:
+        lines.append(' '.join(current_line))
+    
+    # Draw each line
+    line_height = font.get_linesize()
+    for i, line in enumerate(lines):
+        text_surface = font.render(line, True, color)
+        screen.blit(text_surface, (x, y + i * line_height))
+    
+    return len(lines) * line_height  # Return total height of text
+
+def draw_level_intro(screen, level):
+    # Draw semi-transparent background
+    s = pygame.Surface((constants.SCREEN_WIDTH, constants.SCREEN_HEIGHT))
+    s.set_alpha(128)
+    s.fill((0, 0, 0))
+    screen.blit(s, (0, 0))
+    
+    # Draw popup box
+    popup_x = 0
+    popup_y = 0
+
+
+    
+    # pygame.draw.rect(screen, constants.PANEL, (popup_x, popup_y, popup_width, popup_height))
+    # pygame.draw.rect(screen, constants.WHITE, (popup_x, popup_y, popup_width, popup_height), 2)
+    
+    # Draw title
+    draw_text(f"Level {level}", font, constants.WHITE, popup_x + 200, popup_y + 20)
+    
+    # Draw story text with wrapping (max width of 700 pixels)
+    story_height = draw_wrapped_text(constants.LEVEL_STORY[level], font, constants.WHITE, 
+                                   popup_x + 50, popup_y + 100, 700)
+    
+    # Calculate vertical position for images based on story text height
+    images_y = popup_y + 150 + story_height
+    # Load and display enemy image
+    enemy_name = constants.LEVEL_CHARACTERS[level][1]  # Get enemy name for current level
+    enemy_img = pygame.image.load(f'assets/level{level}/images/characters/{enemy_name}/idle/0.png').convert_alpha()
+    enemy_img = scale_image(enemy_img, constants.CHARACTER_SCALE)
+    screen.blit(enemy_img, (popup_x + 50, images_y))
+    draw_text(f"Enemy", font, constants.WHITE, popup_x + 50, images_y + 100)
+    
+    # Load and display potion image
+    potion_img = pygame.image.load(f'assets/level{level}/images/items/{constants.LEVEL_ITEMS[level][1]}.png').convert_alpha()
+    potion_img = scale_image(potion_img, constants.POTION_SCALE)
+    screen.blit(potion_img, (popup_x + 200, images_y))
+    draw_text("Health", font, constants.WHITE, popup_x + 200, images_y + 100)
+    
+    # Load and display collectible image
+    collectible_img = pygame.image.load(f'assets/level{level}/images/items/{constants.LEVEL_ITEMS[level][0]}.png').convert_alpha()
+    collectible_img = scale_image(collectible_img, constants.ITEM_SCALE)
+    screen.blit(collectible_img, (popup_x + 350, images_y))
+    draw_text("Collectible", font, constants.WHITE, popup_x + 350, images_y + 100)
+    
+    # Draw continue text
+    draw_text("Click anywhere", font, constants.YELLOW, popup_x + 50, images_y + 150)
+    draw_text(" to continue", font, constants.YELLOW, popup_x + 50, images_y + 170)
 
 def draw_controls_popup(screen):
     # Draw semi-transparent background
@@ -386,7 +466,16 @@ while run:
     # set the frame rate
     clock.tick(constants.FPS)
 
-    if show_input:
+    if show_level_intro:
+        draw_level_intro(screen, level)
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                run = False
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                show_level_intro = False
+                show_controls = True
+
+    elif show_input:
         scoreboard.draw_input(screen, total_score)
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
@@ -401,10 +490,12 @@ while run:
                 else:
                     if len(scoreboard.input_text) < 10:  # Limit name length
                         scoreboard.input_text += event.unicode
+
     elif show_scoreboard:
         scoreboard.draw_scoreboard(screen)
         if exit_button.draw(screen):
             run = False
+    
     elif show_controls:
         draw_controls_popup(screen)
         for event in pygame.event.get():
@@ -426,16 +517,16 @@ while run:
 
             else:
                 if start_button.draw(screen):
-                    start_game = True
-                    start_intro = True
-                    show_controls = True
+                    show_level_intro = True
+                    # start_intro = True
+                    
                 if leaderboard_button.draw(screen):
                     show_leaderboard = True
                 if exit_button.draw(screen):
                     run = False
                 if load_button.draw(screen):
                     game_state = load_game_state(game_caretaker)
-                    print(game_state)
+
                     if game_state:
                         player_score = game_state['player_score']
                         level = game_state['level']
@@ -515,6 +606,7 @@ while run:
                         player.score = game_state['level_data'][f'level{level}']['player_score']
                         previous_player_score = player.score
                         # Reset and recreate item groups
+                        coin_collect_image = []
                         load_coin_collect_image(level)
                         item_group.empty()
                         score_coin = score_coin = ItemFactory.create_item(0, constants.SCREEN_WIDTH - 81, 23, coin_collect_image, True)
@@ -625,7 +717,7 @@ while run:
 
                 # check level complete
                 if level_complete:
-                    start_intro = True
+                    # start_intro = True
                     if level == 3:  # Game completed
                         show_input = True
                         total_score = player_score
@@ -633,6 +725,7 @@ while run:
 
                     else:
                         level += 1
+                        show_level_intro = True
                         world_data = reset_level()
                         #load level data and create world
                         with open(f'levels/level{level}_data.csv', newline='') as csvfile:

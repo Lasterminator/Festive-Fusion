@@ -11,8 +11,7 @@ FPS = 60
 
 # speed
 CHARACTER_SPEED = 10
-FLARE_SPEED = 10
-FIREBALL_SPEED = 4
+FLARE_SPEED = 20
 ENEMY_SPEED  = 5
 
 # Scale
@@ -34,6 +33,12 @@ TILE_TYPES = {
     1: 86,
     2: 74,
     3: 63
+}
+
+LEVEL_STORY = {
+    1: "You are an elf warrior who must reach home and defeat evil turkeys to save your village. There were some previous warriors who failed to do so. But they could defeat a few turkeys and cook them for dinner. If you are lucky, you might find some of cooked turkeys and also find treasure chests.",
+    2: "Now you are going to save your friend's village occupied by ghosts of dead turkeys. Defeat the ghosts and reach your friend's home. Ghosts will spook you and suck your blood, so you must collect blood viels to recover your lost blood. In the mean time, you can collect pumpkins to bring it to villagers.",
+    3: "WINTER IS COMING!! You must find your way home while collecting gifts left by Santa to take back to your village. Snowmen are guarding the way home. You must defeat them to reach home."
 }
 
 LEVEL_ASSETS = {
