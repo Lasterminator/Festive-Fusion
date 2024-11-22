@@ -54,38 +54,29 @@ font = pygame.font.Font("assets/fonts/AtariClassic.ttf", 20)
 def scale_image(image, scale):
     return pygame.transform.scale(image, (image.get_width() * scale, image.get_height() * scale))
 
-
-
-# load music and sounds
-# pygame.mixer.music.load('assets/audio/music.wav')
-# pygame.mixer.music.set_volume(0.3)
 try:
     pygame.mixer.music.load('assets/level1/audio/music.mp3')
     pygame.mixer.music.set_volume(0.2)
     pygame.mixer.music.play(-1)
 except:
     print("Error loading background music")
-# # pygame.mixer.music.play(-1, 0.0, 5000)
-shot_fx = pygame.mixer.Sound('assets/audio/arrow_shot.mp3')
-shot_fx.set_volume(0.5)
+shot_fx = pygame.mixer.Sound('assets/audio/flare_shot.mp3')
+shot_fx.set_volume(0.1)
 hit_fx = pygame.mixer.Sound('assets/level1/audio/enemy_killed.mp3')
 hit_fx.set_volume(0.5)
 coin_fx = pygame.mixer.Sound('assets/audio/coin.wav')
 coin_fx.set_volume(0.5)
 heal_fx = pygame.mixer.Sound('assets/audio/heal.wav')
 heal_fx.set_volume(0.5)
-# shot_fx = None
-# hit_fx = None
-# coin_fx = None
-# heal_fx = None
+
 
 def load_audio(level):
     try:
         pygame.mixer.music.load(f'assets/level{level}/audio/music.mp3')
         pygame.mixer.music.set_volume(0.2)
         pygame.mixer.music.play(-1)
-        shot_fx = pygame.mixer.Sound(f'assets/level{level}/audio/arrow_shot.mp3')
-        shot_fx.set_volume(0.5)
+        shot_fx = pygame.mixer.Sound(f'assets/level{level}/audio/flare_shot.mp3')
+        shot_fx.set_volume(0.1)
         hit_fx = pygame.mixer.Sound(f'assets/level{level}/audio/enemy_killed.mp3')
         hit_fx.set_volume(0.5)
         coin_fx = pygame.mixer.Sound('assets/audio/coin.wav')
@@ -135,9 +126,9 @@ item_images.append(coin_image)
 item_images.append(red_potion)
 
 # load weapon image
-weapon_image = scale_image(pygame.image.load('assets/images/weapons/gun.png').convert_alpha(), constants.BOW_SCALE)
-flare_image = scale_image(pygame.image.load('assets/images/weapons/flare.png').convert_alpha(), constants.BOW_SCALE)
-fireball_image = scale_image(pygame.image.load('assets/images/weapons/flare.png').convert_alpha(), constants.BOW_SCALE)
+weapon_image = scale_image(pygame.image.load('assets/images/weapons/gun.png').convert_alpha(), constants.GUN_SCALE)
+flare_image = scale_image(pygame.image.load('assets/images/weapons/flare.png').convert_alpha(), constants.GUN_SCALE)
+fireball_image = scale_image(pygame.image.load('assets/images/weapons/flare.png').convert_alpha(), constants.GUN_SCALE)
 
 # load tile_map images based on current level
 tile_list = []
@@ -203,7 +194,7 @@ def draw_grid():
 # function to reset level
 def reset_level():
     damage_text_group.empty()
-    arrow_group.empty()
+    flare_group.empty()
     item_group.empty()
     fireball_group.empty()
 
@@ -278,7 +269,7 @@ player = world.player
 
 
 # create a weapon object
-bow = Weapon(weapon_image, flare_image)
+gun = Weapon(weapon_image, flare_image)
 
 # extract  enemies from world data
 enemy_list = world.character_list
@@ -286,7 +277,7 @@ enemy_list = world.character_list
 
 # Create sprite group
 damage_text_group = pygame.sprite.Group()
-arrow_group = pygame.sprite.Group()
+flare_group = pygame.sprite.Group()
 item_group = pygame.sprite.Group()
 fireball_group = pygame.sprite.Group()
 
@@ -576,8 +567,6 @@ while run:
                 # fill the screen with a color
                 screen.fill(constants.BGCOLOR)
 
-                # draw_grid()
-
                 if player.alive:
                     # Calculate the character's movement
                     dx = 0
@@ -605,12 +594,12 @@ while run:
                                 player_score += constants.REWARD_MAP['enemy']
 
                     player.update()
-                    arrow = bow.update(player)
-                    if arrow:
-                        arrow_group.add(arrow)
+                    flare = gun.update(player)
+                    if flare:
+                        flare_group.add(flare)
                         shot_fx.play()
-                    for arrow in arrow_group:
-                        damage, damage_pos = arrow.update(screen_scroll, world.obstacle_tiles, enemy_list)
+                    for flare in flare_group:
+                        damage, damage_pos = flare.update(screen_scroll, world.obstacle_tiles, enemy_list)
                         if damage:
                             damage_text = DamageText(damage_pos.centerx, damage_pos.y, str(damage), constants.RED)
                             damage_text_group.add(damage_text)
@@ -626,9 +615,9 @@ while run:
                 for enemy in enemy_list:
                     enemy.draw(screen)
                 player.draw(screen)
-                bow.draw(screen)
-                for arrow in arrow_group:
-                    arrow.draw(screen)
+                gun.draw(screen)
+                for flare in flare_group:
+                    flare.draw(screen)
                 damage_text_group.draw(screen)
                 item_group.draw(screen)
                 draw_info()

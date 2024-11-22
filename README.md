@@ -42,7 +42,7 @@ A 2D game built with Pygame featuring Halloween, Christmas, and Thanksgiving the
 - **A**: Move Left
 - **D**: Move Right
 - **Mouse**: Aim weapon
-- **Left Click**: Shoot arrow
+- **Left Click**: Shoot Flare
 - **ESC**: Pause game
 
 
