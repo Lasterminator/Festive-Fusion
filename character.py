@@ -4,9 +4,8 @@ import weapon
 import math
 
 class Character:
-    def __init__(self, x, y, health, mob_animation_list, character_type, boss, size, CSV_X=None, CSV_Y=None):
+    def __init__(self, x, y, health, mob_animation_list, character_type, size, CSV_X=None, CSV_Y=None):
         self.character_type = character_type
-        self.boss = boss
         self.score = 0
         self.flip = False
         self.animation_list = mob_animation_list[character_type]
