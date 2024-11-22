@@ -56,12 +56,12 @@ def scale_image(image, scale):
 
 try:
     pygame.mixer.music.load('assets/level1/audio/music.mp3')
-    pygame.mixer.music.set_volume(0.2)
+    pygame.mixer.music.set_volume(0.3)
     pygame.mixer.music.play(-1)
 except:
     print("Error loading background music")
 shot_fx = pygame.mixer.Sound('assets/audio/flare_shot.mp3')
-shot_fx.set_volume(0.1)
+shot_fx.set_volume(0.05)
 hit_fx = pygame.mixer.Sound('assets/level1/audio/enemy_killed.mp3')
 hit_fx.set_volume(0.5)
 coin_fx = pygame.mixer.Sound('assets/audio/coin.wav')
@@ -73,10 +73,10 @@ heal_fx.set_volume(0.5)
 def load_audio(level):
     try:
         pygame.mixer.music.load(f'assets/level{level}/audio/music.mp3')
-        pygame.mixer.music.set_volume(0.2)
+        pygame.mixer.music.set_volume(0.3)
         pygame.mixer.music.play(-1)
         shot_fx = pygame.mixer.Sound(f'assets/level{level}/audio/flare_shot.mp3')
-        shot_fx.set_volume(0.1)
+        shot_fx.set_volume(0.05)
         hit_fx = pygame.mixer.Sound(f'assets/level{level}/audio/enemy_killed.mp3')
         hit_fx.set_volume(0.5)
         coin_fx = pygame.mixer.Sound('assets/audio/coin.wav')

@@ -161,19 +161,6 @@ class Character:
                 hit_fx = pygame.mixer.Sound(f'assets/level{level}/audio/enemy_killed.mp3')
                 hit_fx.set_volume(0.5)
                 hit_fx.play()
-            # if self.alive:  # Only add to killed list once when enemy dies
-            #     if isEnemy:  # Don't track hero's death
-            #         with open('tmp_save.txt', 'r') as f:
-            #             existing_items = []
-            #             killed_enemies = []
-            #             for line in f:
-            #                 if line.startswith('COLLECTED_ITEMS:'):
-            #                     existing_items = eval(line.split(':')[1])
-            #                 elif line.startswith('KILLED_ENEMIES:'):
-            #                     killed_enemies = eval(line.split(':')[1])
-                    
-            #         if (self.CSV_X, self.CSV_Y) not in killed_enemies:
-            #             killed_enemies.append((self.CSV_X, self.CSV_Y))
                     
             self.alive = False
             isEnemyDead = True

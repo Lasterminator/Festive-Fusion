@@ -2,7 +2,7 @@
 
 A 2D game built with Pygame featuring Halloween, Christmas, and Thanksgiving themed levels, combat mechanics, and score tracking.
 
-## 🎮 Features
+## Features
 
 - Three unique themed levels with different enemies and items
 - Real-time combat system with fireball mechanics
@@ -13,7 +13,7 @@ A 2D game built with Pygame featuring Halloween, Christmas, and Thanksgiving the
 - Smooth scrolling camera
 - Sound effects and background music
 
-## 🛠️ Technical Implementation
+## Technical Implementation
 
 ### Core Systems
 - State management using Memento pattern
@@ -27,7 +27,7 @@ A 2D game built with Pygame featuring Halloween, Christmas, and Thanksgiving the
 - Player character with combat mechanics
 - Skeleton enemy with AI pathfinding
 
-## 🔧 Installation
+## Installation
 
 1. Ensure you have Python 3.x installed
 2. Install required dependencies
@@ -35,7 +35,7 @@ A 2D game built with Pygame featuring Halloween, Christmas, and Thanksgiving the
 4. Run the game
 
 
-## 🎮 Controls
+## Controls
 
 - **W**: Move Up
 - **S**: Move Down
@@ -46,7 +46,7 @@ A 2D game built with Pygame featuring Halloween, Christmas, and Thanksgiving the
 - **ESC**: Pause game
 
 
-## 💾 Save System
+## Save System
 
 The game features a comprehensive save system that persists:
 - Player position and health
@@ -55,7 +55,7 @@ The game features a comprehensive save system that persists:
 - Current level progress
 - Total score
 
-## 🏆 Scoring System
+## Scoring System
 
 Points are awarded for:
 - Collecting coins: 10 points
@@ -63,7 +63,7 @@ Points are awarded for:
 
 High scores are stored in `scoreboard.json` and displayed on the leaderboard.
 
-## 🔧 Technical Requirements
+## Technical Requirements
 
 - Python 3.x
 - Pygame library
