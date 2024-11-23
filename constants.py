@@ -48,9 +48,9 @@ LEVEL_ASSETS = {
 }
 
 LEVEL_CHARACTERS = {
-    1: ['elf', 'turkey'],
-    2: ['elf', 'ghost'],
-    3: ['elf', 'snowman']
+    1: ['charizard', 'turkey'],
+    2: ['charizard', 'ghost'],
+    3: ['charizard', 'snowman']
 }
 
 LEVEL_ITEMS = {

@@ -152,11 +152,20 @@ def load_mob_animation_list(level):
         animation_list = []
         for animation in animation_types:
             temp_list = []
-            for i in range(4):
-                img = pygame.image.load(f'{current_asset_path}/images/characters/{mob}/{animation}/{i}.png').convert_alpha()
-                img = scale_image(img, constants.CHARACTER_SCALE)
-                temp_list.append(img)
-            animation_list.append(temp_list)
+            if mob == "charizard":
+                for i in range(8):
+                    # Format number with leading zeros (e.g., 000, 001, 002)
+                    padded_num = str(i).zfill(3)
+                    img = pygame.image.load(f'{current_asset_path}/images/characters/{mob}/{animation}/tile{padded_num}.png').convert_alpha()
+                    img = scale_image(img, constants.CHARACTER_SCALE)
+                    temp_list.append(img)
+                animation_list.append(temp_list)
+            else:
+                for i in range(4):
+                    img = pygame.image.load(f'{current_asset_path}/images/characters/{mob}/{animation}/{i}.png').convert_alpha()
+                    img = scale_image(img, constants.CHARACTER_SCALE)
+                    temp_list.append(img)
+                animation_list.append(temp_list)
         mob_animation_list.append(animation_list)
 
 load_mob_animation_list(level)
