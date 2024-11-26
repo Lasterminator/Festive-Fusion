@@ -31,6 +31,8 @@ show_controls = False
 screen_scroll = [0, 0]
 player_score = 0
 previous_player_score = 0
+show_main_menu = True
+load_game_flag = False
 
 # define character movement variables
 moving_left = False
@@ -105,6 +107,7 @@ back_img = scale_image(pygame.image.load('assets/images/buttons/button_back.png'
 level1_img = scale_image(pygame.image.load('assets/images/buttons/button_level1.png').convert_alpha(), constants.LEVEL_BUTTON_SCALE)
 level2_img = scale_image(pygame.image.load('assets/images/buttons/button_level2.png').convert_alpha(), constants.LEVEL_BUTTON_SCALE)
 level3_img = scale_image(pygame.image.load('assets/images/buttons/button_level3.png').convert_alpha(), constants.LEVEL_BUTTON_SCALE)
+menu_img = scale_image(pygame.image.load('assets/images/buttons/button_back.png').convert_alpha(), constants.BUTTON_SCALE)
 
 # load heart image
 heart_empty = scale_image(pygame.image.load('assets/images/items/heart_empty.png').convert_alpha(), constants.ITEM_SCALE)
@@ -317,9 +320,10 @@ leaderboard_button = Button(constants.SCREEN_WIDTH // 2 - 150, constants.SCREEN_
 back_button = Button(constants.SCREEN_WIDTH // 2 - 80, constants.SCREEN_HEIGHT // 2 + 230, back_img)
 exit_button = Button(constants.SCREEN_WIDTH // 2 - 70, constants.SCREEN_HEIGHT // 2 + 170, exit_img)
 resume_button = Button(constants.SCREEN_WIDTH // 2 - 75, constants.SCREEN_HEIGHT // 2 - 100,resume_img)
-level1_button = Button(constants.SCREEN_WIDTH // 2 - 150, constants.SCREEN_HEIGHT // 2 + 50, level1_img)
+level1_button = Button(constants.SCREEN_WIDTH // 2 - 300, constants.SCREEN_HEIGHT // 2 + 50, level1_img)
 level2_button = Button(constants.SCREEN_WIDTH // 2 - 50, constants.SCREEN_HEIGHT // 2 + 50, level2_img)
-level3_button = Button(constants.SCREEN_WIDTH // 2 + 50, constants.SCREEN_HEIGHT // 2 + 50, level3_img)
+level3_button = Button(constants.SCREEN_WIDTH // 2 + 200, constants.SCREEN_HEIGHT // 2 + 50, level3_img)
+menu_button = Button(constants.SCREEN_WIDTH // 2 - 360, constants.SCREEN_HEIGHT // 2 - 260, menu_img)
 
 def save_game_state(caretaker):
     with open('save_game.json', 'r') as f:
@@ -597,6 +601,7 @@ while run:
             logo_x = (constants.SCREEN_WIDTH - logo_img.get_width()) // 2
             logo_y = constants.SCREEN_HEIGHT // 4 - 120
             screen.blit(logo_img, (logo_x, logo_y))
+            load_game_flag = True
             
             if show_leaderboard:
                 scoreboard.draw_scoreboard(screen)
@@ -622,9 +627,10 @@ while run:
                     show_leaderboard = True
                 if exit_button.draw(screen):
                     run = False
+
                 if load_button.draw(screen):
                     game_state = load_game_state(game_caretaker)
-
+                    load_game_flag = False
                     if game_state:
                         player_score = game_state['player_score']
                         level = game_state['level']
@@ -739,7 +745,7 @@ while run:
                                 if (enemy.CSV_X, enemy.CSV_Y) in killed_enemies:
                                     world.character_list.remove(enemy)
                             enemy_list = world.character_list
-
+                    
             if exit_button.draw(screen):
                 run = False
 
@@ -751,6 +757,52 @@ while run:
                 if save_button.draw(screen):
                     save_game_state(game_caretaker)
                     pause_game = False
+                if menu_button.draw(screen):
+                    # Reset all game states
+                    start_game = False
+                    pause_game = False
+                    start_intro = False
+                    show_controls = False
+                    show_level_intro = False
+                    show_input = False
+                    show_scoreboard = False
+                    show_leaderboard = False
+                    show_level_select = False
+                    show_main_menu = True
+                    # Reset player stats
+                    player_score = 0
+                    previous_player_score = 0
+                    
+                    # Reset level
+                    # level = 1
+                    current_asset_path = constants.LEVEL_ASSETS[level]
+                    
+                    # Clear all groups
+                    damage_text_group.empty()
+                    flare_group.empty()
+                    item_group.empty()
+                    fireball_group.empty()
+                    
+                    # Reset world data
+                    world_data = reset_level()
+                    with open(f'levels/level{level}_data.csv', newline='') as csvfile:
+                        reader = csv.reader(csvfile, delimiter=',')
+                        for x, row in enumerate(reader):
+                            for y, tile in enumerate(row):
+                                world_data[x][y] = int(tile)
+                    
+                    
+                    # Reload initial assets
+                    mob_animation_list = []
+                    load_mob_animation_list(level)
+                    load_audio(level)
+                    
+                    # Reset world and player
+                    world = World()
+                    world.reset()
+                    player = world.player
+                    enemy_list = world.character_list
+                                   
                 if exit_button.draw(screen):
                     run = False
             else:

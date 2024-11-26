@@ -1,7 +1,7 @@
 {
-    "level": 2,
-    "player_score": 1070,
-    "player_health": 80,
+    "level": 3,
+    "player_score": 440,
+    "player_health": 70,
     "level_data": {
         "level1": {
             "player_score": 0,
@@ -9,96 +9,32 @@
             "killed_enemies": []
         },
         "level2": {
-            "player_score": 7,
+            "player_score": 0,
+            "collected_items": [],
+            "killed_enemies": []
+        },
+        "level3": {
+            "player_score": 2,
             "collected_items": [
                 [
-                    17,
-                    123
+                    3,
+                    12
                 ],
                 [
-                    6,
-                    98
-                ],
-                [
-                    32,
-                    23
-                ],
-                [
-                    11,
-                    22
-                ],
-                [
-                    6,
-                    125
-                ],
-                [
-                    1,
-                    51
-                ],
-                [
-                    17,
-                    94
-                ],
-                [
-                    19,
-                    140
-                ],
-                [
-                    19,
-                    137
-                ],
-                [
-                    1,
-                    22
+                    30,
+                    17
                 ]
             ],
             "killed_enemies": [
                 [
-                    2,
-                    98
+                    8,
+                    24
                 ],
                 [
-                    5,
-                    16
-                ],
-                [
-                    6,
-                    51
-                ],
-                [
-                    7,
-                    131
-                ],
-                [
-                    13,
-                    123
-                ],
-                [
-                    13,
-                    137
-                ],
-                [
-                    26,
-                    14
-                ],
-                [
-                    91,
-                    99
-                ],
-                [
-                    99,
-                    99
-                ],
-                [
-                    133,
-                    123
+                    32,
+                    27
                 ]
             ]
-        },
-        "level3": {
-            "player_score": 0,
-            "collected_items": [],
-            "killed_enemies": []
         }
     }
 }
