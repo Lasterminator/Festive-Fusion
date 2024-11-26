@@ -91,6 +91,7 @@ load_audio(level)
     
 
 # load button images
+logo_img = scale_image(pygame.image.load('assets/images/logo.png').convert_alpha(), constants.LOGO_SCALE)
 start_img = scale_image(pygame.image.load('assets/images/buttons/button_start.png').convert_alpha(), constants.BUTTON_SCALE)
 restart_img = scale_image(pygame.image.load('assets/images/buttons/button_restart.png').convert_alpha(), constants.BUTTON_SCALE)
 exit_img = scale_image(pygame.image.load('assets/images/buttons/button_exit.png').convert_alpha(), constants.BUTTON_SCALE)
@@ -303,13 +304,13 @@ intro_fade = ScreenFade(1, constants.BLACK, 4)
 death_fade = ScreenFade(2, constants.PINK, 4)
 
 # create button
-start_button = Button(constants.SCREEN_WIDTH // 2 - 70, constants.SCREEN_HEIGHT // 2 - 100, start_img)
+start_button = Button(constants.SCREEN_WIDTH // 2 - 70, constants.SCREEN_HEIGHT // 2 - 30, start_img)
 restart_button = Button(constants.SCREEN_WIDTH // 2 - 110, constants.SCREEN_HEIGHT // 2 - 50, restart_img)
 save_button = Button(constants.SCREEN_WIDTH // 2 - 70, constants.SCREEN_HEIGHT // 2, save_img)
-load_button = Button(constants.SCREEN_WIDTH // 2 - 70, constants.SCREEN_HEIGHT // 2, load_img)
-leaderboard_button = Button(constants.SCREEN_WIDTH // 2 - 150, constants.SCREEN_HEIGHT // 2 - 200, leaderboard_img)
-back_button = Button(constants.SCREEN_WIDTH // 2 - 80, constants.SCREEN_HEIGHT // 2 + 200, back_img)
-exit_button = Button(constants.SCREEN_WIDTH // 2 - 70, constants.SCREEN_HEIGHT // 2 + 100, exit_img)
+load_button = Button(constants.SCREEN_WIDTH // 2 - 70, constants.SCREEN_HEIGHT // 2 + 70, load_img)
+leaderboard_button = Button(constants.SCREEN_WIDTH // 2 - 150, constants.SCREEN_HEIGHT // 2 - 130, leaderboard_img)
+back_button = Button(constants.SCREEN_WIDTH // 2 - 80, constants.SCREEN_HEIGHT // 2 + 230, back_img)
+exit_button = Button(constants.SCREEN_WIDTH // 2 - 70, constants.SCREEN_HEIGHT // 2 + 170, exit_img)
 resume_button = Button(constants.SCREEN_WIDTH // 2 - 75, constants.SCREEN_HEIGHT // 2 - 100,resume_img)
 
 
@@ -535,6 +536,9 @@ while run:
     else:
         if start_game == False:
             screen.fill(constants.MENU_BGCOLOR)
+            logo_x = (constants.SCREEN_WIDTH - logo_img.get_width()) // 2
+            logo_y = constants.SCREEN_HEIGHT // 4 - 120
+            screen.blit(logo_img, (logo_x, logo_y))
             
             if show_leaderboard:
                 scoreboard.draw_scoreboard(screen)
