@@ -29,12 +29,9 @@ A 2D game built with Pygame featuring Halloween, Christmas, and Thanksgiving the
 
 ## Installation
 
-1. Ensure you have Python 3.x installed
-2. Install required dependencies
-3. Clone the repository
-4. Run the game
-
-
+1. Ensure you have Python 3.x installed and Pygame library installed `pip install pygame`
+2. Clone the repository
+3. Run the game `python main.py`
 ## Controls
 
 - **W**: Move Up
@@ -42,7 +39,7 @@ A 2D game built with Pygame featuring Halloween, Christmas, and Thanksgiving the
 - **A**: Move Left
 - **D**: Move Right
 - **Mouse**: Aim weapon
-- **Left Click**: Shoot Flare
+- **Left Click**: Shoot Fire Blast (Signature Move of Charmander)
 - **ESC**: Pause game
 
 
