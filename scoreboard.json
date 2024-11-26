@@ -2,23 +2,15 @@
     "scores": [
         {
             "name": "Utkal",
-            "score": 3410
+            "score": 1410
         },
         {
             "name": "loser",
-            "score": 2410
-        },
-        {
-            "name": "guru",
-            "score": 2110
+            "score": 410
         },
         {
             "name": "Subhash",
-            "score": 1900
-        },
-        {
-            "name": "someone",
-            "score": 1390
+            "score": 10
         }
     ]
 }
