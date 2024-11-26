@@ -13,6 +13,21 @@ A 2D game built with Pygame featuring Halloween, Christmas, and Thanksgiving the
 - Smooth scrolling camera
 - Sound effects and background music
 
+## Installation
+
+1. Ensure you have Python 3.x installed and Pygame library installed `pip install pygame`
+2. Clone the repository
+3. Run the game `python main.py`
+   
+## Controls
+
+- **W**: Move Up
+- **S**: Move Down
+- **A**: Move Left
+- **D**: Move Right
+- **Left Click on Enemy**: Shoot Fire Blast (Signature Move of Charmander)
+- **ESC**: Pause game
+
 ## Technical Implementation
 
 ### Core Systems
@@ -27,26 +42,10 @@ A 2D game built with Pygame featuring Halloween, Christmas, and Thanksgiving the
 - Player character with combat mechanics
 - Skeleton enemy with AI pathfinding
 
-## Installation
-
-1. Ensure you have Python 3.x installed and Pygame library installed `pip install pygame`
-2. Clone the repository
-3. Run the game `python main.py`
-## Controls
-
-- **W**: Move Up
-- **S**: Move Down
-- **A**: Move Left
-- **D**: Move Right
-- **Mouse**: Aim weapon
-- **Left Click**: Shoot Fire Blast (Signature Move of Charmander)
-- **ESC**: Pause game
-
-
 ## Save System
 
-The game features a comprehensive save system that persists:
-- Player position and health
+The game features a comprehensive save system that persists in `save_game.json`:
+- Player health
 - Collected items
 - Killed enemies
 - Current level progress
