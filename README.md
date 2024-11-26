@@ -15,9 +15,10 @@ A 2D game built with Pygame featuring Halloween, Christmas, and Thanksgiving the
 
 ## Installation
 
-1. Ensure you have Python 3.x installed and Pygame library installed `pip install pygame`
-2. Clone the repository
-3. Run the game `python main.py`
+1. Ensure you have Python installed and Pygame library installed `pip3 install pygame`
+2. If you get error when installing it likely due to python 3.11 or higher, try creating a virtual environment and install pygame there.
+3. Clone the repository
+4. Run the game `python main.py`
    
 ## Controls
 
