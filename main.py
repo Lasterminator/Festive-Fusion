@@ -398,7 +398,7 @@ def draw_wrapped_text(text, font, color, x, y, max_width):
     return len(lines) * line_height  # Return total height of text
 
 def initialize_level(level_number):
-    global level, current_asset_path, world_data, tile_list, mob_animation_list, level_complete, coin_collect_image, show_level_intro, player, enemy_list
+    global level, current_asset_path, world_data, tile_list, mob_animation_list, level_complete, coin_collect_image, show_level_intro, player, enemy_list, item_group, tile_count, coin_image, item_images, red_potion, world, score_coin
     level = level_number
     show_level_intro = True
     world_data = reset_level()
@@ -608,6 +608,22 @@ while run:
                 if back_button.draw(screen):
                     show_leaderboard = False
             elif show_level_select:
+                # Draw level select text
+                title_text = "SELECT LEVEL"
+                title_surface = font.render(title_text, True, constants.WHITE)
+                title_rect = title_surface.get_rect(center=(constants.SCREEN_WIDTH // 2, constants.SCREEN_HEIGHT // 3))
+                screen.blit(title_surface, title_rect)
+
+                # Draw level texts above buttons
+                level1_text = font.render("LEVEL 1", True, constants.WHITE)
+                level2_text = font.render("LEVEL 2", True, constants.WHITE)
+                level3_text = font.render("LEVEL 3", True, constants.WHITE)
+
+                # Position texts above buttons (referencing the button positions from lines 323-325)
+                screen.blit(level1_text, (constants.SCREEN_WIDTH // 2 - 300, constants.SCREEN_HEIGHT // 2))
+                screen.blit(level2_text, (constants.SCREEN_WIDTH // 2 - 50, constants.SCREEN_HEIGHT // 2))
+                screen.blit(level3_text, (constants.SCREEN_WIDTH // 2 + 200, constants.SCREEN_HEIGHT // 2))
+
                 if level1_button.draw(screen):
                     show_level_select = False
                     initialize_level(1)
