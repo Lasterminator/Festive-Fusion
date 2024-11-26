@@ -16,7 +16,7 @@ pygame.init()
 
 # create a screen with a width and height and set the caption
 screen = pygame.display.set_mode((constants.SCREEN_WIDTH, constants.SCREEN_HEIGHT))
-pygame.display.set_caption("Halloween Game")
+pygame.display.set_caption("Festive Fusion")
 
 # Clock controlling the speed of the game
 clock = pygame.time.Clock()
