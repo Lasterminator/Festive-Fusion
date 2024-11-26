@@ -43,6 +43,7 @@ show_scoreboard = False
 show_input = False
 show_leaderboard = False
 show_level_intro = False
+show_level_select = False
 scoreboard = Scoreboard()
 
 #instance of game state
@@ -61,6 +62,7 @@ try:
     pygame.mixer.music.play(-1)
 except:
     print("Error loading background music")
+
 shot_fx = pygame.mixer.Sound('assets/audio/flare_shot.mp3')
 shot_fx.set_volume(0.05)
 hit_fx = pygame.mixer.Sound('assets/level1/audio/enemy_killed.mp3')
@@ -100,6 +102,9 @@ save_img = scale_image(pygame.image.load('assets/images/buttons/button_save.png'
 load_img = scale_image(pygame.image.load('assets/images/buttons/button_load.png').convert_alpha(), constants.LOAD_BUTTON_SCALE)
 leaderboard_img = scale_image(pygame.image.load('assets/images/buttons/button_leaderboard.png').convert_alpha(), constants.LEADERBOARD_BUTTON_SCALE)
 back_img = scale_image(pygame.image.load('assets/images/buttons/button_back.png').convert_alpha(), constants.BUTTON_SCALE)
+level1_img = scale_image(pygame.image.load('assets/images/buttons/button_level1.png').convert_alpha(), constants.LEVEL_BUTTON_SCALE)
+level2_img = scale_image(pygame.image.load('assets/images/buttons/button_level2.png').convert_alpha(), constants.LEVEL_BUTTON_SCALE)
+level3_img = scale_image(pygame.image.load('assets/images/buttons/button_level3.png').convert_alpha(), constants.LEVEL_BUTTON_SCALE)
 
 # load heart image
 heart_empty = scale_image(pygame.image.load('assets/images/items/heart_empty.png').convert_alpha(), constants.ITEM_SCALE)
@@ -312,7 +317,9 @@ leaderboard_button = Button(constants.SCREEN_WIDTH // 2 - 150, constants.SCREEN_
 back_button = Button(constants.SCREEN_WIDTH // 2 - 80, constants.SCREEN_HEIGHT // 2 + 230, back_img)
 exit_button = Button(constants.SCREEN_WIDTH // 2 - 70, constants.SCREEN_HEIGHT // 2 + 170, exit_img)
 resume_button = Button(constants.SCREEN_WIDTH // 2 - 75, constants.SCREEN_HEIGHT // 2 - 100,resume_img)
-
+level1_button = Button(constants.SCREEN_WIDTH // 2 - 150, constants.SCREEN_HEIGHT // 2 + 50, level1_img)
+level2_button = Button(constants.SCREEN_WIDTH // 2 - 50, constants.SCREEN_HEIGHT // 2 + 50, level2_img)
+level3_button = Button(constants.SCREEN_WIDTH // 2 + 50, constants.SCREEN_HEIGHT // 2 + 50, level3_img)
 
 def save_game_state(caretaker):
     with open('save_game.json', 'r') as f:
@@ -385,6 +392,57 @@ def draw_wrapped_text(text, font, color, x, y, max_width):
         screen.blit(text_surface, (x, y + i * line_height))
     
     return len(lines) * line_height  # Return total height of text
+
+def initialize_level(level_number):
+    global level, current_asset_path, world_data, tile_list, mob_animation_list, level_complete, coin_collect_image, show_level_intro, player, enemy_list
+    level = level_number
+    show_level_intro = True
+    world_data = reset_level()
+    #load level data and create world
+    with open(f'levels/level{level}_data.csv', newline='') as csvfile:
+        reader = csv.reader(csvfile, delimiter=',')
+        for x, row in enumerate(reader):
+            for y, tile in enumerate(row):
+                world_data[x][y] = int(tile)
+
+    # reload tile list for new level
+    tile_list = []
+    current_asset_path = constants.LEVEL_ASSETS[level]
+    tile_count = constants.TILE_TYPES[level]
+
+    for x in range(tile_count):
+        tile_image = pygame.image.load(f'{current_asset_path}/images/tiles/{x}.png').convert_alpha()
+        tile_image = pygame.transform.scale(tile_image, (constants.TILE_SIZE, constants.TILE_SIZE))
+        tile_list.append(tile_image)
+
+    mob_animation_list = []
+    load_mob_animation_list(level)
+    load_audio(level)
+
+    # Reload coin images for current level
+    coin_image = []
+    img = pygame.image.load(f'{current_asset_path}/images/items/{constants.LEVEL_ITEMS[level][0]}.png').convert_alpha()
+    img = scale_image(img, constants.ITEM_SCALE)
+    coin_image.append(img)
+    
+    # Reload item images
+    item_images = []
+    item_images.append(coin_image)
+    if len(constants.LEVEL_ITEMS[level]) > 1:
+        red_potion = scale_image(pygame.image.load(f'{current_asset_path}/images/items/{constants.LEVEL_ITEMS[level][1]}.png').convert_alpha(), constants.POTION_SCALE)
+        item_images.append(red_potion)
+    world = World()
+    world.process_data(world_data, tile_list, item_images, mob_animation_list, level)
+
+    player = world.player
+    enemy_list = world.character_list
+    coin_collect_image = []
+    load_coin_collect_image(level)
+    score_coin = ItemFactory.create_item(0, constants.SCREEN_WIDTH - 81, 23, coin_collect_image, True)
+    item_group.add(score_coin)
+    #add the items from the level data, also handles removing items from previous level
+    for item in world.item_list:
+        item_group.add(item)
 
 def draw_level_intro(screen, level):
     # Draw semi-transparent background
@@ -544,11 +602,21 @@ while run:
                 scoreboard.draw_scoreboard(screen)
                 if back_button.draw(screen):
                     show_leaderboard = False
-
+            elif show_level_select:
+                if level1_button.draw(screen):
+                    show_level_select = False
+                    initialize_level(1)
+                if level2_button.draw(screen):
+                    show_level_select = False
+                    initialize_level(2)
+                if level3_button.draw(screen):
+                    show_level_select = False
+                    initialize_level(3)
+                if back_button.draw(screen):
+                    show_level_select = False
             else:
                 if start_button.draw(screen):
-                    show_level_intro = True
-                    # start_intro = True
+                    show_level_select = True
                     
                 if leaderboard_button.draw(screen):
                     show_leaderboard = True
